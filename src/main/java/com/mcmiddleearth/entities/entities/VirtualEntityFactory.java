@@ -1,0 +1,164 @@
+package com.mcmiddleearth.entities.entities;
+
+import com.mcmiddleearth.entities.ai.movement.MovementType;
+import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
+import com.mcmiddleearth.entities.entities.attributes.VirtualEntityAttributeInstance;
+import com.mcmiddleearth.entities.entities.composite.CompositeEntity;
+import com.mcmiddleearth.entities.util.UuidGenerator;
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class VirtualEntityFactory {
+
+    private final McmeEntityType type;
+
+    private boolean invertWhitelist;
+
+    private UUID uniqueId;
+
+    private String name;
+
+    private final Location location;
+
+    private MovementType movementType = MovementType.WALKING;
+
+    private final Map<Attribute, AttributeInstance> attributes;
+
+    public VirtualEntityFactory(McmeEntityType type, Location location) {
+        invertWhitelist = false;
+        uniqueId = UuidGenerator.getRandomV2();
+        this.type = type;
+        this.location = location;
+        attributes = VirtualAttributeFactory.getAttributesFor(type);
+    }
+
+    private VirtualEntityFactory(McmeEntityType type, Location location, boolean invertWhitelist,
+                                 UUID uniqueId, String name, Map<Attribute, AttributeInstance> attributes) {
+        this.type = type;
+        this.location = location;
+        this.invertWhitelist = invertWhitelist;
+        this.uniqueId = uniqueId;
+        this.name = name;
+        this.attributes = attributes;
+    }
+
+    public VirtualEntityFactory withUuid(UUID uuid) {
+        this.uniqueId = uuid;
+        return this;
+    }
+
+    public VirtualEntityFactory withName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public VirtualEntityFactory withBlackList(boolean useBlacklist) {
+        this.invertWhitelist = useBlacklist;
+        return this;
+    }
+
+    public VirtualEntityFactory withAttribute(Attribute attribute, double baseValue) {
+        attributes.put(attribute, VirtualAttributeFactory.getAttributeInstance(attribute,baseValue));
+        return this;
+    }
+
+    public VirtualEntityFactory withMovementType(MovementType movementType) {
+        this.movementType = movementType;
+        return this;
+    }
+
+    public MovementType getMovementType() {
+        return movementType;
+    }
+
+    public McmeEntityType getType() {
+        return type;
+    }
+
+    public boolean isInvertWhitelist() {
+        return invertWhitelist;
+    }
+
+    public UUID getUniqueId() {
+        return uniqueId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Location getLocation() {
+        return location.clone();
+    }
+
+    public Map<Attribute, AttributeInstance> getAttributes() {
+        Map<Attribute,AttributeInstance> result = new HashMap<>();
+        attributes.forEach((attribute, instance)
+                -> result.put(attribute, new VirtualEntityAttributeInstance(attribute,
+                                                                            instance.getDefaultValue(),
+                                                                            instance.getBaseValue())));
+        return result;
+    }
+
+    public McmeEntity build(int entityId) {
+        if(type.isCustomType()) {
+            switch(type.getCustomType()) {
+                case COMPOSITE:
+                    return new CompositeEntity(entityId, this);
+                default:
+                    throw new RuntimeException("EntityType not implemented");
+            }
+        } else {
+            switch(type.getBukkitEntityType()) {
+                case EXPERIENCE_ORB:
+                case PAINTING:
+                case PRIMED_TNT:
+                    throw new RuntimeException("EntityType not implemented");
+                case PLAYER:
+                    return new SimplePlayer(entityId, this);
+                case AREA_EFFECT_CLOUD:
+                case ARMOR_STAND:
+                case ARROW:
+                case BOAT:
+                case DRAGON_FIREBALL:
+                case ENDER_CRYSTAL:
+                case EVOKER:
+                case ENDER_PEARL:
+                case FALLING_BLOCK:
+                case FIREWORK:
+                case IRON_GOLEM:
+                case ITEM_FRAME:
+                case FIREBALL:
+                case LEASH_HITCH:
+                case LIGHTNING:
+                case LLAMA_SPIT:
+                case MINECART:
+                case MINECART_CHEST:
+                case MINECART_COMMAND:
+                case MINECART_FURNACE:
+                case MINECART_HOPPER:
+                case MINECART_MOB_SPAWNER:
+                case MINECART_TNT:
+                case SHULKER_BULLET:
+                case SMALL_FIREBALL:
+                case SNOWBALL:
+                case SPECTRAL_ARROW:
+                case EGG:
+                case THROWN_EXP_BOTTLE:
+                case SPLASH_POTION:
+                case TRIDENT:
+                case WITHER_SKULL:
+                case FISHING_HOOK:
+                    return new SimpleNonLivingEntity(entityId, this);
+                default:
+                    return new SimpleLivingEntity(entityId, this);
+            }
+        }
+    }
+
+}

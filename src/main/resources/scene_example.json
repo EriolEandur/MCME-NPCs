@@ -1,0 +1,37 @@
+{
+  "comment": "Composition of a scene. All elements can be defined in this file or delegated to other files.",
+  "name": "Example Scene",
+  "entities": {
+    "testNPC": {
+      "file": "entity_example"
+    },
+    "gollum": {
+      "file": "gollum"
+    }
+  },
+  "events": {
+    "someEvent": {
+      "file": "event_example"
+    }
+  },
+  "paths": {
+    "somePath": {
+      "file": "path_example"
+    }
+  },
+  "areas": {
+    "someArea": {
+      "file": "area_example"
+    }
+  },
+  "dialogs": {
+    "someDialog": {
+      "file": "dialog_example"
+    }
+  },
+  "items": {
+    "someItem": {
+      "file": "item_example"
+    }
+  }
+}

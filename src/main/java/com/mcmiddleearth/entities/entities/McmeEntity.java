@@ -1,0 +1,36 @@
+package com.mcmiddleearth.entities.entities;
+
+import com.mcmiddleearth.entities.ai.goals.Goal;
+import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
+
+import java.util.UUID;
+
+public interface McmeEntity {
+
+    public UUID getUniqueId();
+
+    public String getName();
+
+    public Location getLocation();
+
+    public void setLocation(Location location);
+
+    public McmeEntityType getType();
+
+    public Vector getVelocity();
+
+    public void setVelocity(Vector velocity);
+
+    public Location getTarget();
+
+    public Goal getGoal();
+
+    public void doTick();
+
+    public int getEntityId();
+
+    public int getEntityQuantity();
+
+}

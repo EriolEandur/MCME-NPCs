@@ -1,0 +1,48 @@
+{
+  "parent": null,
+  "name": "Test NPC",
+  "model": "player",
+  "equipment": {
+    "head": {
+      "file": "item_example"
+    }
+  },
+  "events": {
+    "talkEvent": {
+
+    }
+  },
+  "event_handler": {
+    "npcSpawnEvent": {
+      "spawn": {
+        "x": 101.4,
+        "y": -23.3,
+        "z": 322.1
+      },
+      "follow_path": {
+        "onGround": true,
+        "repeat": true,
+        "path": {
+          "file": "path_example"
+        }
+      }
+    },
+    "npcTalkEvent": {
+      "talk": {
+        "file": "example_dialog"
+      },
+      "stop": {},
+      "look": {
+        "target": "@p"
+      }
+    },
+    "npcFollowEvent": {
+      "follow": {
+        "target": "@p",
+        "min_distance": 3,
+        "max_distance": 15,
+        "on_ground": true
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+commands
+    spawn
+    remove
+    animate
+    state (walk, run, swim, fly, sleep)
+    goal
+    velocity
+    location
+    look
+    rotate
+    talk
+    interact
+    trade
+    viewer management
+
+goals
+
+pathfinding
+    move on ground
+    navigate around obstacles?

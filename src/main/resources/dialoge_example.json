@@ -1,0 +1,45 @@
+{
+  "structure": {
+    "start": {
+      "responses": {
+        "showYourGoods": "buy",
+        "iWantToSell": "sell",
+        "aksForGift": "gift",
+        "sayBye": "bye"
+      }
+    },
+    "buy": {
+      "action": "open_inventory",
+      "inventory": {
+        "file": "inventory_buy_example"
+      }
+    },
+    "sell": {
+      "action": "open_inventory",
+      "inventory": {
+        "file": "inventory_sell_example"
+      }
+    },
+    "gift": {
+      "action": "give_item",
+      "item": {
+        "file": "item_example"
+      }
+    },
+    "bye": {
+      "action": "end_dialog"
+    }
+  },
+  "languages": {
+    "english": {
+      "start": "Welcome traveller!",
+      "showYourGoods": "Show me your goods.",
+      "iWantToSell": "I'd like to sell something.",
+      "sayBye": "I have to leave, bye.",
+      "bye": "Good bye to you."
+    },
+    "dutch": {
+      "file": "dutch/translation_example"
+    }
+  }
+}

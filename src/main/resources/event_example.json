@@ -1,0 +1,38 @@
+{
+  "or": {
+    "comment": "Possible conditions: area, location, time, entity",
+    "area": {
+      "area": {
+        "file": "area_example"
+      },
+      "target": "testNPC",
+      "comment": "possible triggers: enter, leave, inside, outside",
+      "trigger": "enter"
+    },
+    "and": {
+      "location": {
+        "x": 100,
+        "y": 21,
+        "z": -533,
+        "comment_1": "possible targets: <player name>, <npc name>, minecraft command selectors",
+        "target": "@p",
+        "comment_2": "possible triggers: arrive, leave, there, away",
+        "trigger": "arrive",
+        "range": 3
+      },
+      "time": {
+        "comment": "Possible keys: at, before, after ",
+        "at": 200
+      },
+      "entity": {
+        "target": "@p",
+        "comment_1": "possible properties: alive, health, saturation, effect",
+        "property": "health",
+        "comment_2": "Possible triggers: at, above, below",
+        "trigger": "below",
+        "comment_3": "Value for 'alive' trigger can be 0 or 1, for effects it's the effect power",
+        "value": 7
+      }
+    }
+  }
+}
