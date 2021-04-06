@@ -2,6 +2,7 @@ package com.mcmiddleearth.entities.entities;
 
 import com.mcmiddleearth.entities.ai.goals.Goal;
 import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
+import com.mcmiddleearth.entities.ai.movement.EntityBoundingBox;
 import com.mcmiddleearth.entities.ai.movement.MovementEngine;
 import com.mcmiddleearth.entities.ai.movement.MovementType;
 import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
@@ -56,7 +57,9 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     private final Map<Attribute, AttributeInstance> attributes = new HashMap<>();
 
-    private MovementEngine movementEngine;
+    private final EntityBoundingBox boundingBox;
+
+    private final MovementEngine movementEngine;
 
     public VirtualEntity(VirtualEntityFactory factory) {
         this.type = factory.getType();
@@ -67,6 +70,8 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         this.invertWhiteList = factory.isInvertWhitelist();
         this.movementType = factory.getMovementType();
         this.movementEngine = new MovementEngine(this);
+        this.boundingBox = factory.getBoundingBox();
+        this.boundingBox.setLocation(location);
     }
 
     @Override
@@ -111,6 +116,8 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     public void move() {
         location = location.add(velocity);
+        boundingBox.setLocation(location);
+
         movePacket.update();
         movePacket.send(viewers);
         lookUpdate = false;
@@ -122,6 +129,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
     @Override
     public void setLocation(Location location) {
         this.location = location.clone();
+        this.boundingBox.setLocation(location);
         teleported = true;
     }
 
@@ -193,6 +201,10 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     public boolean onGround() {
         return true;
+    }
+
+    public EntityBoundingBox getBoundingBox() {
+        return boundingBox;
     }
 
     @Override

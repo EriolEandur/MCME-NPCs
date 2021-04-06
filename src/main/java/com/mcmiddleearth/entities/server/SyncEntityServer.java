@@ -2,8 +2,8 @@ package com.mcmiddleearth.entities.server;
 
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.entities.entities.VirtualEntityFactory;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
+import com.mcmiddleearth.entities.entities.VirtualEntityFactory;
 import com.mcmiddleearth.entities.events.events.McmeEntityEvent;
 import com.mcmiddleearth.entities.events.events.McmeEntityRemoveEvent;
 import com.mcmiddleearth.entities.events.handler.EntityEventHandler;
@@ -24,7 +24,8 @@ public class SyncEntityServer implements EntityServer {
 
     private final PlayerProvider playerProvider;
     private final EntityProvider entityProvider;
-    private ChunkProvider chunkProvider;
+
+    private final Map<UUID, BlockProvider> blockProviders;
 
     private BukkitTask serverTask;
 
@@ -38,6 +39,7 @@ public class SyncEntityServer implements EntityServer {
         this.plugin = plugin;
         playerProvider = new SyncPlayerProvider();
         entityProvider = new SyncEntityProvider();
+        blockProviders = new HashMap<>();
     }
 
     @Override
@@ -131,6 +133,16 @@ public class SyncEntityServer implements EntityServer {
     }
 
     @Override
+    public BlockProvider getBlockProvider(UUID worldUniqueId) {
+        BlockProvider result = blockProviders.get(worldUniqueId);
+        if (result == null) {
+            result = new SyncBlockProvider(Bukkit.getWorld(worldUniqueId));
+            blockProviders.put(worldUniqueId, result);
+        }
+        return result;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void registerEventHandler(McmeEventListener listener) {
         Arrays.stream(listener.getClass().getDeclaredMethods())
@@ -183,4 +195,19 @@ Logger.getGlobal().info("Matching: "+method.toString());
     public void setViewDistance(int viewDistance) {
         this.viewDistance = viewDistance;
     }
+
+    /*public boolean isPassable(World world, int x, int y, int z) {
+        Block block = world.getBlockAt(x,y,z);
+        block.getBoundingBox().co
+        if(block.isPassable()) {
+            return true;
+        } else {
+            BlockData data = block.getBlockData();
+            return (data instanceof Door && ((Door) data).isOpen())
+                    || (data instanceof Gate && ((Gate) data).isOpen())
+                    || (data instanceof TrapDoor)
+
+        }
+    }*/
+
 }

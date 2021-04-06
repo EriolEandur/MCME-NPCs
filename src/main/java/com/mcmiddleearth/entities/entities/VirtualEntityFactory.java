@@ -1,5 +1,6 @@
 package com.mcmiddleearth.entities.entities;
 
+import com.mcmiddleearth.entities.ai.movement.EntityBoundingBox;
 import com.mcmiddleearth.entities.ai.movement.MovementType;
 import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
 import com.mcmiddleearth.entities.entities.attributes.VirtualEntityAttributeInstance;
@@ -29,12 +30,15 @@ public class VirtualEntityFactory {
 
     private final Map<Attribute, AttributeInstance> attributes;
 
+    private EntityBoundingBox boundingBox;
+
     public VirtualEntityFactory(McmeEntityType type, Location location) {
         invertWhitelist = false;
         uniqueId = UuidGenerator.getRandomV2();
         this.type = type;
         this.location = location;
         attributes = VirtualAttributeFactory.getAttributesFor(type);
+        boundingBox = EntityBoundingBox.getBoundingBox(type);
     }
 
     private VirtualEntityFactory(McmeEntityType type, Location location, boolean invertWhitelist,
@@ -70,6 +74,15 @@ public class VirtualEntityFactory {
     public VirtualEntityFactory withMovementType(MovementType movementType) {
         this.movementType = movementType;
         return this;
+    }
+
+    public VirtualEntityFactory withBoundingBox(EntityBoundingBox boundingBox) {
+        this.boundingBox = new EntityBoundingBox(boundingBox);
+        return this;
+    }
+
+    public EntityBoundingBox getBoundingBox() {
+        return new EntityBoundingBox(boundingBox);
     }
 
     public MovementType getMovementType() {

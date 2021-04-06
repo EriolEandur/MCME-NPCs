@@ -4,6 +4,7 @@ import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntityFactory;
 import com.mcmiddleearth.entities.events.events.McmeEntityEvent;
 import com.mcmiddleearth.entities.events.listener.McmeEventListener;
+import com.mcmiddleearth.entities.provider.BlockProvider;
 import com.mcmiddleearth.entities.provider.PlayerProvider;
 import org.bukkit.Location;
 
@@ -34,9 +35,13 @@ public interface EntityServer {
 
     public PlayerProvider getPlayerProvider();
 
+    public BlockProvider getBlockProvider(UUID worldUniqueId);
+
     public void registerEventHandler(McmeEventListener handler);
 
     public void UnregisterEventHandler(McmeEventListener handler);
 
     public void handleEvent(McmeEntityEvent event);
+
+    //public boolean isPassable(int x, int y, int z);
 }
