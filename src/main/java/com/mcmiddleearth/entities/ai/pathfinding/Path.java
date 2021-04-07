@@ -13,11 +13,8 @@ public class Path {
     private Vector start;
     private final Vector target;
 
-    public Path(Vector start, Vector target) {
-        this.start = start;
+    public Path(Vector target) {
         this.target = target;
-        ordered.add(start);
-        unordered.add(start);
     }
 
     public void  addPoint(Vector point) {
@@ -30,7 +27,13 @@ public class Path {
     }
 
     public boolean isComplete() {
-        return target.equals(ordered.get(ordered.size()-1));
+        if(ordered.isEmpty()) {
+            return false;
+        }
+        Vector last = ordered.get(ordered.size()-1);
+        return  target.getBlockX() == last.getBlockX()
+             && target.getBlockY() == last.getBlockY()
+             && target.getBlockZ() == last.getBlockZ();
     }
 
     /**
@@ -48,9 +51,25 @@ public class Path {
         }
     }
 
-    public Vector getWayPoint() {
-        return null;
+    public Vector getStart() {
+        return start;
     }
+
+    public Vector getEnd() {
+        if(ordered.isEmpty()) {
+            return null;
+        }
+        return ordered.get(ordered.size()-1);
+    }
+
+    /*public Vector getWayPoint() {
+        if(ordered.isEmpty()) {
+            return null;
+        }
+        Vector first = ordered.get(0);
+
+        return null;
+    }*/
 
     public int length() {
         return ordered.size();

@@ -37,7 +37,7 @@ public final class EntitiesPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new PlayerListener(),this);
 
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        manager.addPacketListener(new EntityListener(this));
+        //manager.addPacketListener(new EntityListener(this));
         manager.addPacketListener(new VirtualEntityUseListener(this, server));
 
         server.start();

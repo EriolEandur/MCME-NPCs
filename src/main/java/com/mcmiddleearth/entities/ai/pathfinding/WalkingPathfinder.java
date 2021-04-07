@@ -3,8 +3,10 @@ package com.mcmiddleearth.entities.ai.pathfinding;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.provider.BlockProvider;
 import com.mcmiddleearth.entities.provider.SyncBlockProvider;
-import org.bukkit.block.Block;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -17,7 +19,7 @@ public class WalkingPathfinder implements Pathfinder{
 
     private Vector target;
 
-    private final int maxPathLength = 200;
+    private int maxPathLength = 200;
 
     private PathMarker leaveWall, current;
     private int leaveWallIndex = -1;
@@ -29,21 +31,26 @@ public class WalkingPathfinder implements Pathfinder{
     private Path path;
 
     boolean fail;
-
-    public WalkingPathfinder(VirtualEntity entity, Vector target) {
+    int step;
+    public WalkingPathfinder(VirtualEntity entity) {
         this.entity = entity;
-        this.target = target;
+        this.target = entity.getLocation().toVector();
         this.blockProvider = new SyncBlockProvider(entity.getLocation().getWorld());
         this.random = new Random();
+    }
+
+    public void setMaxPathLength(int maxPathLength) {
+        this.maxPathLength = maxPathLength;
     }
 
     @Override
     public Path getPath(Vector start) {
         fail = false;
-        path = new Path(start, target);
+        path = new Path(target);
         current = new PathMarker(0,start);
-        while(!path.isComplete() && !fail) {
-            if(path.contains(current.getPoint())) {
+        step = 0;
+        while(!path.isComplete() && !fail && step < maxPathLength) {
+            if(path.contains(current.getPoint()) && leaveWall != null) {
                 path.shortcut(current.getPoint(), leaveWallIndex);
                 leaveWallIndex = -1;
                 current = new PathMarker(leaveWall);//start = path.get(path.size()-1);
@@ -54,10 +61,16 @@ public class WalkingPathfinder implements Pathfinder{
             }
 
             current.setRotation(getTargetDirection(current.getPoint()));
+//Logger.getGlobal().info("rotation direct: "+current.getRotation());
             PathMarker next = new PathMarker(current);
             moveMarker(next);
-            if(!canMove(next)) {
+            if(canMove(next)) {
                 path.addPoint(current.getPoint());
+//Logger.getGlobal().info("added direct "+current.toString());
+//entity.getLocation().getWorld().dropItem(new Location(entity.getLocation().getWorld(),current.getPoint().getX(),
+//                current.getPoint().getY(),
+//                current.getPoint().getZ()),new ItemStack(Material.STONE));
+                step++;
                 current.move(next.getPoint().getY());
             } else {
                 followRightSideWall = random.nextBoolean();
@@ -68,7 +81,14 @@ public class WalkingPathfinder implements Pathfinder{
         }
         if(path.isComplete()) {
             path.optimise(entity.getJumpHeight(), entity.getFallDepth());
-            path.getPoints().forEach(vector -> System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ()));
+            path.getPoints().forEach(vector -> {
+                entity.getLocation().getWorld().dropItem(new Location(entity.getLocation().getWorld(),
+                                                                       vector.getX(),
+                                                                       vector.getY(),
+                                                                       vector.getZ()), new ItemStack(Material.BEACON));
+                System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
+            );
+
             return path;
         } else {
             return null;
@@ -79,17 +99,23 @@ public class WalkingPathfinder implements Pathfinder{
         int rotation, oldRotation, val1, val2;
         do {
             path.addPoint(current.getPoint());
+//Logger.getGlobal().info("added wall "+current.toString());
+//entity.getLocation().getWorld().dropItem(new Location(entity.getLocation().getWorld(),current.getPoint().getX(),
+//                                                                                      current.getPoint().getY(),
+//                                                                                      current.getPoint().getZ()),
+//        new ItemStack(Material.STONE));
+            step++;
             PathMarker next = new PathMarker(current);
             moveMarker(next);
             current.move(next.getPoint().getY());
-            int startDirection = getTargetDirection(current.getPoint());
-            oldRotation = current.getRotation()-startDirection;
-            current.turn(!rightSide);
+            int targetDirection = getTargetDirection(current.getPoint());
+            oldRotation = current.getRotation()-targetDirection;
+            current.turn(rightSide);
             next = new PathMarker(current);
             moveMarker(next);
             int i = 0;
             while(!canMove(next) && i < 4) {
-                current.turn(rightSide);
+                current.turn(!rightSide);
                 next = new PathMarker(current);
                 moveMarker(next);
                 i++;
@@ -98,7 +124,7 @@ public class WalkingPathfinder implements Pathfinder{
                 fail = true;
                 return;
             }
-            rotation = current.getRotation()-startDirection;
+            rotation = current.getRotation()-targetDirection;
             //nachricht("rotation: "+rotation+" alteM: "+alteMarke);
             if(rightSide) {
                 val1 = 90;
@@ -107,7 +133,7 @@ public class WalkingPathfinder implements Pathfinder{
                 val1 = -90;
                 val2 = 270;
             }
-        } while(!path.isComplete()
+        } while(step < maxPathLength && !path.isComplete()
                 && !(( rotation == val1 || rotation== val2
                 || oldRotation == val1 || oldRotation== val2)
                 && !path.contains(current.getPoint())));
@@ -133,14 +159,15 @@ public class WalkingPathfinder implements Pathfinder{
     }
 
     private void moveMarker(PathMarker next) {
-        next.move(0);
+        next.move(next.getPoint().getY());
         double blockY = blockY(next.getPoint());
         next.getPoint().setY(blockY);
     }
 
     private boolean canMove(PathMarker next) {
-        return next.getPoint().getY() - current.getPoint().getY() < entity.getJumpHeight()
-                && current.getPoint().getY() - next.getPoint().getY() < entity.getFallDepth();
+//Logger.getGlobal().info("CanMove: "+next.getPoint().getY() +" - "+current.getPoint().getY());
+        return next.getPoint().getY() - current.getPoint().getY() <= entity.getJumpHeight()
+                && current.getPoint().getY() - next.getPoint().getY() <= entity.getFallDepth();
     }
 
     private double blockY(Vector point) {
@@ -235,5 +262,8 @@ public class WalkingPathfinder implements Pathfinder{
             point.setY(nextY);
         }
 
+        public String toString() {
+            return "x: "+point.getX()+" y: "+point.getY()+" z: "+point.getZ();
+        }
     }
 }

@@ -18,6 +18,6 @@ public class FollowEntityGoal extends EntityTargetingGoal {
 
     @Override
     public void updateTick() {
-        //getWaypointDirection()
+        //calculate Waypoint
     }
 }

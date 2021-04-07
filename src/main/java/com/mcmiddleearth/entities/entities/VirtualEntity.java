@@ -49,8 +49,6 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     private MovementType movementType;
 
-    private final Vector gravity = new Vector(0,-0.5,0);
-
     private VirtualEntityGoal goal;
 
     private final McmeEntityType type;
@@ -72,9 +70,10 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         this.name = factory.getName();
         this.invertWhiteList = factory.isInvertWhitelist();
         this.movementType = factory.getMovementType();
-        this.movementEngine = new MovementEngine(this);
         this.boundingBox = factory.getBoundingBox();
         this.boundingBox.setLocation(location);
+        this.movementEngine = new MovementEngine(this);
+        this.goal = factory.getGoalFactory().build(this);
     }
 
     @Override
@@ -86,7 +85,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
             }
         } else {
             if(goal != null) {
-                if(tickCounter%goal.getUpdateInterval()==0) {
+                if(tickCounter%goal.getUpdateInterval()==goal.getUpdateRandom()) {
                     goal.updatePath();
                 }
                 switch(movementType) {

@@ -1,5 +1,9 @@
 package com.mcmiddleearth.entities.entities;
 
+import com.mcmiddleearth.entities.ai.goals.Goal;
+import com.mcmiddleearth.entities.ai.goals.GoalType;
+import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
+import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoalFactory;
 import com.mcmiddleearth.entities.ai.movement.EntityBoundingBox;
 import com.mcmiddleearth.entities.ai.movement.MovementType;
 import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
@@ -31,6 +35,12 @@ public class VirtualEntityFactory {
     private final Map<Attribute, AttributeInstance> attributes;
 
     private EntityBoundingBox boundingBox;
+
+    private GoalType goalType;
+
+    private Location targetLocation;
+
+    private McmeEntity targetEntity;
 
     public VirtualEntityFactory(McmeEntityType type, Location location) {
         invertWhitelist = false;
@@ -79,6 +89,27 @@ public class VirtualEntityFactory {
     public VirtualEntityFactory withBoundingBox(EntityBoundingBox boundingBox) {
         this.boundingBox = new EntityBoundingBox(boundingBox);
         return this;
+    }
+
+    public VirtualEntityFactory withGoalType(GoalType goalType) {
+        this.goalType = goalType;
+        return this;
+    }
+
+    public VirtualEntityFactory withTargetLocation(Location target) {
+        this.targetLocation = target;
+        return this;
+    }
+
+    public VirtualEntityFactory withTargetEntity(McmeEntity target) {
+        this.targetEntity = target;
+        return this;
+    }
+
+    public VirtualEntityGoalFactory getGoalFactory() {
+        return new VirtualEntityGoalFactory().withTargetEntity(targetEntity)
+                .withTargetLocation(targetLocation)
+                .withGoalType(goalType);
     }
 
     public EntityBoundingBox getBoundingBox() {

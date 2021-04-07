@@ -3,6 +3,8 @@ package com.mcmiddleearth.entities.ai.goals;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import org.bukkit.util.Vector;
 
+import java.util.Random;
+
 public abstract class VirtualEntityGoal implements Goal{
 
     private GoalType type;
@@ -17,9 +19,12 @@ public abstract class VirtualEntityGoal implements Goal{
 
     private int updateInterval = 10;
 
+    private int updateRandom;
+
     public VirtualEntityGoal(GoalType type, VirtualEntity entity) {
         this.type = type;
         this.entity = entity;
+        updateRandom = new Random().nextInt(updateInterval);
     }
 
     public Vector getDirection() {
@@ -61,5 +66,9 @@ public abstract class VirtualEntityGoal implements Goal{
 
     public void setUpdateInterval(int updateInterval) {
         this.updateInterval = updateInterval;
+    }
+
+    public int getUpdateRandom() {
+        return updateRandom;
     }
 }

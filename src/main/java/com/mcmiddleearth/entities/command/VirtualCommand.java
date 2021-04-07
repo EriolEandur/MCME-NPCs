@@ -6,10 +6,11 @@ import com.mcmiddleearth.command.McmeCommandSender;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.entities.EntityAPI;
-import com.mcmiddleearth.entities.entities.McmeEntity;
-import com.mcmiddleearth.entities.entities.VirtualEntityFactory;
-import com.mcmiddleearth.entities.entities.McmeEntityType;
-import com.mcmiddleearth.entities.entities.RealPlayer;
+import com.mcmiddleearth.entities.ai.goals.FollowEntityGoal;
+import com.mcmiddleearth.entities.ai.goals.GoalType;
+import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
+import com.mcmiddleearth.entities.ai.pathfinding.WalkingPathfinder;
+import com.mcmiddleearth.entities.entities.*;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -51,6 +52,8 @@ public class VirtualCommand extends AbstractCommandHandler implements TabExecuto
                         .executes(context -> showSelection(context.getSource()))
                         .then(HelpfulLiteralBuilder.literal("clear")
                                 .executes(context -> clearSelection(context.getSource()))))
+                .then(HelpfulLiteralBuilder.literal("path")
+                        .executes(context -> findPath(context.getSource())))
                 .then(HelpfulLiteralBuilder.literal("animate")
                         .then(HelpfulRequiredArgumentBuilder.argument("animationId", word())
                                 .executes(context -> animateEntity(context.getSource(), context.getArgument("animationId",String.class)))));
@@ -80,6 +83,15 @@ public class VirtualCommand extends AbstractCommandHandler implements TabExecuto
     private int clearSelection(McmeCommandSender sender) {
         ((BukkitCommandSender)sender).clearSelection();
         sender.sendMessage(new ComponentBuilder("Entity Selection cleared").create());
+        return 0;
+    }
+
+    private int findPath(McmeCommandSender sender) {
+        RealPlayer player = ((RealPlayer)sender);
+        VirtualEntity entity = (VirtualEntity) player.getSelectedEntities().iterator().next();
+        VirtualEntityGoal goal = new FollowEntityGoal(GoalType.FOLLOW_ENTITY, entity,
+                                     new WalkingPathfinder(entity,player.getLocation().toVector()), player);
+        goal.updatePath();
         return 0;
     }
 

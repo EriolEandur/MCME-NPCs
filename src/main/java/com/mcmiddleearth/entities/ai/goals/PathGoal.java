@@ -9,6 +9,8 @@ public abstract class PathGoal extends VirtualEntityGoal {
 
     private Path path;
 
+    private Vector waypoint;
+
     private final Pathfinder pathfinder;
 
     public PathGoal(GoalType type, VirtualEntity entity, Pathfinder pathfinder) {
@@ -25,10 +27,16 @@ public abstract class PathGoal extends VirtualEntityGoal {
     }
 
     public Vector getWaypointDirection() {
-        if(path == null || path.getWayPoint() == null) {
+        if(path == null || waypoint == null) {
             return null;
         } else {
-            return path.getWayPoint().clone().subtract(getEntity().getLocation().toVector());
+            return waypoint.clone().subtract(getEntity().getLocation().toVector());
         }
+    }
+
+    public void updateWaypoint() {
+        if(path!=null && path.getEnd()!=null) {
+            Vector targetDirection = path.getEnd().clone().subtract(getEntity().getLocation().toVector());
+
     }
 }
