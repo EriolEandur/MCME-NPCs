@@ -61,6 +61,9 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     private final MovementEngine movementEngine;
 
+    private final int jumpHeight = 1;
+    private final int fallDepth = 1; //if both values differ from each other pathfinding can easily get stuck.
+
     public VirtualEntity(VirtualEntityFactory factory) {
         this.type = factory.getType();
         this.location = factory.getLocation();
@@ -249,4 +252,11 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         attributes.put(attribute, VirtualAttributeFactory.getAttributeInstance(attribute, null));
     }
 
+    public int getJumpHeight() {
+        return jumpHeight;
+    }
+
+    public int getFallDepth() {
+        return fallDepth;
+    }
 }
