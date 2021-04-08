@@ -2,6 +2,7 @@ package com.mcmiddleearth.entities.provider;
 
 import com.mcmiddleearth.entities.entities.RealPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -35,6 +36,5 @@ public class SyncPlayerProvider implements PlayerProvider {
     public void removePlayer(Player player) {
         players.remove(player.getUniqueId());
     }
-
 
 }

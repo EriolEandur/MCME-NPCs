@@ -86,17 +86,7 @@ public class MovementEngine {
         for (int i = (int) boundingBox.getMinX(); i <= boundingBox.getMaxX(); i++) {
             for (int j = (int) boundingBox.getMinZ(); j <= boundingBox.getMaxZ(); j++) {
                 int y = (int) boundingBox.getMinY();
-                if(!blockProvider.isPassable(i,y,j)) {
-                    do {
-                        y++;
-                    } while (!blockProvider.isPassable(i, y, j));
-                    y--; //y at lowest non-passable block;
-                } else {
-                    do {
-                        y--;
-                    } while(blockProvider.isPassable(i,y,j));
-                }
-                double thisDistance = boundingBox.getMinY() - blockProvider.getBoundingBox(i,y,j).getMaxY();
+                double thisDistance = boundingBox.getMinY() - blockProvider.blockTopY(i,y,j);
                 if(thisDistance < distance){
                     distance = thisDistance;
                 }

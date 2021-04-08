@@ -28,5 +28,20 @@ public class SyncBlockProvider implements BlockProvider {
         return world.getBlockAt(x,y,z).getBoundingBox();
     }
 
+    @Override
+    public double blockTopY(int x, int y, int z) {
+        if (!isPassable(x, y, z)) {
+            do {
+                y++;
+            } while (!isPassable(x, y, z));
+            y--; //y at lowest non-passable block;
+        } else {
+            do {
+                y--;
+            } while (isPassable(x, y, z));
+        }
+        return getBoundingBox(x,y,z).getMaxY();
+    }
+
 
 }

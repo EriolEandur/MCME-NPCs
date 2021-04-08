@@ -13,4 +13,6 @@ public interface BlockProvider {
     public BoundingBox getBoundingBox(int x, int y, int z);
 
     public boolean isPassable(int x, int y, int z);
+
+    public double blockTopY(int x, int y, int z);
 }

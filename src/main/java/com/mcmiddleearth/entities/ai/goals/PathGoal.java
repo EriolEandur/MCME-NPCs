@@ -2,7 +2,9 @@ package com.mcmiddleearth.entities.ai.goals;
 
 import com.mcmiddleearth.entities.ai.pathfinding.Path;
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
+import com.mcmiddleearth.entities.ai.pathfinding.RayTracer;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 public abstract class PathGoal extends VirtualEntityGoal {
@@ -36,7 +38,35 @@ public abstract class PathGoal extends VirtualEntityGoal {
 
     public void updateWaypoint() {
         if(path!=null && path.getEnd()!=null) {
-            Vector targetDirection = path.getEnd().clone().subtract(getEntity().getLocation().toVector());
 
+        }
+    }
+
+    private boolean isDirectWayClear(Vector target) {
+        Vector targetDirection = target.clone().subtract(getEntity().getLocation().toVector());
+        RayTracer tracer = new RayTracer(getEntity().getLocation().toVector(),targetDirection);
+        BoundingBox boundingBox = getEntity().getBoundingBox().getBoundingBox();
+        int jumpHeight = getEntity().getJumpHeight();
+        tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMinY(),boundingBox.getMinZ()));
+        tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMinY(),boundingBox.getMaxZ()));
+        tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMinY(),boundingBox.getMinZ()));
+        tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMinY(),boundingBox.getMaxZ()));
+        tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMaxY(),boundingBox.getMinZ()));
+        tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMaxY(),boundingBox.getMaxZ()));
+        tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMinZ()));
+        tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMaxZ()));
+        tracer.trace();
+        for(int i = tracer.first(); i < tracer.last(); i += tracer.stepX()) {
+            RayTracer.RayTraceResultColumn current = tracer.get(i);
+            RayTracer.RayTraceResultColumn next = tracer.get(i+1);
+            for(int j = current.first(); j < current.last(); j += tracer.stepZ()) {
+                if(current.get(j+1)-current.get(j)>jumpHeight
+                    || (next.has(j) && next.get(j)-current.get(j) > jumpHeight)) {
+                    return false;
+                }
+
+            }
+        }
+        return true;
     }
 }

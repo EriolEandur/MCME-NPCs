@@ -160,7 +160,7 @@ public class WalkingPathfinder implements Pathfinder{
 
     private void moveMarker(PathMarker next) {
         next.move(next.getPoint().getY());
-        double blockY = blockY(next.getPoint());
+        double blockY = blockProvider.blockTopY(next.getPoint().getBlockX(),next.getPoint().getBlockY(),next.getPoint().getBlockZ());
         next.getPoint().setY(blockY);
     }
 
@@ -168,23 +168,6 @@ public class WalkingPathfinder implements Pathfinder{
 //Logger.getGlobal().info("CanMove: "+next.getPoint().getY() +" - "+current.getPoint().getY());
         return next.getPoint().getY() - current.getPoint().getY() <= entity.getJumpHeight()
                 && current.getPoint().getY() - next.getPoint().getY() <= entity.getFallDepth();
-    }
-
-    private double blockY(Vector point) {
-        int x = point.getBlockX();
-        int y = point.getBlockY();
-        int z = point.getBlockZ();
-        if (!blockProvider.isPassable(x, y, z)) {
-            do {
-                y++;
-            } while (!blockProvider.isPassable(x, y, z));
-            y--; //y at lowest non-passable block;
-        } else {
-            do {
-                y--;
-            } while (blockProvider.isPassable(x, y, z));
-        }
-        return blockProvider.getBoundingBox(x,y,z).getMaxY();
     }
 
     @Override
