@@ -1,5 +1,6 @@
 package com.mcmiddleearth.entities.ai.pathfinding;
 
+import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.provider.BlockProvider;
 import com.mcmiddleearth.entities.provider.SyncBlockProvider;
@@ -35,7 +36,7 @@ public class WalkingPathfinder implements Pathfinder{
     public WalkingPathfinder(VirtualEntity entity) {
         this.entity = entity;
         this.target = entity.getLocation().toVector();
-        this.blockProvider = new SyncBlockProvider(entity.getLocation().getWorld());
+        this.blockProvider = EntitiesPlugin.getEntityServer().getBlockProvider(entity.getLocation().getWorld().getUID());
         this.random = new Random();
     }
 
