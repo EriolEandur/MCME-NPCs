@@ -5,7 +5,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 
 public class RayTracer<T> {
 
@@ -22,8 +21,7 @@ public class RayTracer<T> {
     private final Vector start;
     private final Vector traceVector;
 
-    private double mz;
-    private double my;
+    private double mz, myx, myz;
 
     TriFunction<Integer, Integer, Integer, T> calculator;
 
@@ -34,7 +32,8 @@ public class RayTracer<T> {
         stepX = (traceVector.getX()>0?1:-1);
         stepZ = (traceVector.getZ()>0?1:-1);
         mz = traceVector.getZ() / traceVector.getX();
-        my = traceVector.getY() / traceVector.getX();
+        myx = traceVector.getY() / traceVector.getX();
+        myz = traceVector.getY() / traceVector.getZ();
         if(stepX<0) {
             blockX = start.getBlockX();
             blockEndX = (int) (start.getX()+traceVector.getX())+1;
@@ -76,8 +75,10 @@ public class RayTracer<T> {
             }
         }
         int[] blockYs = new int[maxZ - minZ +1];
-
-        blockX += stepX;
+        for(int i = 0; i < blockYs.length; i++) {
+            blockYs[i] = maxY + (int) (myz * i);
+        }
+        return new RayTraceResultColumn(blockX, minZ, blockYs);
     }
 
     public void addRay(Vector start) {
@@ -164,7 +165,7 @@ public class RayTracer<T> {
         }
 
         public double getY(double x) {
-            return start.getY()+my * (x - start.getX());
+            return start.getY()+ myx * (x - start.getX());
         }
 
         public double getZ(double x) {

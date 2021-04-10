@@ -85,6 +85,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
             }
         } else {
             if(goal != null) {
+                goal.updateTick();
                 if(tickCounter%goal.getUpdateInterval()==goal.getUpdateRandom()) {
                     goal.updatePath();
                 }

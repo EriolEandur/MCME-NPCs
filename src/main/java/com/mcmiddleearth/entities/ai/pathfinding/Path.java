@@ -26,6 +26,10 @@ public class Path {
         return ordered;
     }
 
+    public Vector get(int i) {
+        return ordered.get(i);
+    }
+
     public boolean isComplete() {
         if(ordered.isEmpty()) {
             return false;

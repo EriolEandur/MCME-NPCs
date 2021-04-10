@@ -29,7 +29,7 @@ public abstract class PathGoal extends VirtualEntityGoal {
         path = getPathfinder().getPath(start);
     }
 
-    public Vector getWaypointDirection() {
+    public Vector getDirection() {
         if(path == null || waypoint == null) {
             return null;
         } else {
@@ -39,7 +39,11 @@ public abstract class PathGoal extends VirtualEntityGoal {
 
     public void updateWaypoint() {
         if(path!=null && path.getEnd()!=null) {
-
+            int index = path.length()-1;
+            while(!isDirectWayClear(path.get(index)) && index >= 0) {
+                index --;
+            }
+            waypoint = path.get(index).clone();
         }
     }
 

@@ -3,6 +3,8 @@ package com.mcmiddleearth.entities.ai.goals;
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
+import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
 public class FollowEntityGoal extends EntityTargetingGoal {
 
@@ -14,10 +16,20 @@ public class FollowEntityGoal extends EntityTargetingGoal {
     public void updatePath() {
         getPathfinder().setTarget(getTarget().getLocation().toVector());
         findPath(getEntity().getLocation().toVector());
+        updateWaypoint();
+        rotation = true;
+        yaw = getEntity().getLocation().clone().setDirection(getDirection()).getYaw();
     }
 
     @Override
     public void updateTick() {
-        //calculate Waypoint
+        rotation = false;
+        headRotation = true;
+        Location targetDir = getEntity().getLocation().clone()
+                                        .setDirection(target.getLocation().toVector()
+                                                            .subtract(getEntity().getLocation().toVector()));
+        headPitch = targetDir.getPitch();
+        headYaw = targetDir.getYaw();
+        //head rotation
     }
 }
