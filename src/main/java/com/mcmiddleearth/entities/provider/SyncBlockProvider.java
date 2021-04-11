@@ -33,12 +33,12 @@ public class SyncBlockProvider implements BlockProvider {
         if (!isPassable(x, y, z)) {
             do {
                 y++;
-            } while (!isPassable(x, y, z));
+            } while (!isPassable(x, y, z) && y < world.getMaxHeight());
             y--; //y at lowest non-passable block;
         } else {
             do {
                 y--;
-            } while (isPassable(x, y, z));
+            } while (isPassable(x, y, z) && y > 1);
         }
         return getBoundingBox(x,y,z).getMaxY();
     }

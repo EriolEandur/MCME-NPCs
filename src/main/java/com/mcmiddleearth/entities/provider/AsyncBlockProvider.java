@@ -1,7 +1,6 @@
 package com.mcmiddleearth.entities.provider;
 
 import org.bukkit.Location;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.util.BoundingBox;
 
@@ -20,5 +19,10 @@ public class AsyncBlockProvider implements BlockProvider {
     @Override
     public boolean isPassable(int x, int y, int z) {
         return false;
+    }
+
+    @Override
+    public double blockTopY(int x, int y, int z) {
+        return 0;
     }
 }

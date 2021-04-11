@@ -2,9 +2,9 @@ package com.mcmiddleearth.entities.ai.goals;
 
 public interface Goal {
 
-    void updatePath();
+    void update();
 
-    void updateTick();
+    void doTick();
 
     int getUpdateInterval();
 

@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SyncEntityServer implements EntityServer {
@@ -47,7 +48,11 @@ public class SyncEntityServer implements EntityServer {
         serverTask = new BukkitRunnable() {
             @Override
             public void run() {
-                doTick();
+                try {
+                    doTick();
+                } catch(Exception ex) {
+                    Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING,"Ticking error!",ex);
+                }
             }
         }.runTaskTimer(plugin,1,1);
     }

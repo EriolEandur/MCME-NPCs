@@ -1,5 +1,9 @@
 package com.mcmiddleearth.entities.entities;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.ai.goals.Goal;
 import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
 import com.mcmiddleearth.entities.ai.movement.EntityBoundingBox;
@@ -7,15 +11,19 @@ import com.mcmiddleearth.entities.ai.movement.MovementEngine;
 import com.mcmiddleearth.entities.ai.movement.MovementType;
 import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
 import com.mcmiddleearth.entities.protocol.packets.AbstractPacket;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attributable;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 public abstract class VirtualEntity implements McmeEntity, Attributable {
@@ -81,24 +89,27 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         if(teleported) {
             teleport();
             if(goal!=null) {
-                goal.updatePath();
+                goal.update();
             }
         } else {
             if(goal != null) {
-                goal.updateTick();
+                goal.doTick();
                 if(tickCounter%goal.getUpdateInterval()==goal.getUpdateRandom()) {
-                    goal.updatePath();
+//Logger.getGlobal().info("Goal update: "+ tickCounter +" "+ goal.getUpdateInterval() + " "+goal.getUpdateRandom());
+                    goal.update();
                 }
                 switch(movementType) {
                     case FLYING:
                     case WALKING:
-                        goal.updateTick();
+                        goal.doTick();
                 }
-                movementEngine.calculateMovement(goal.getDirection());
+                //movementEngine.calculateMovement(goal.getDirection());
                 if(goal.hasHeadRotation()) {
+//Logger.getGlobal().info("head rotation: "+ goal.getHeadYaw()+" "+goal.getHeadPitch());
                     setHeadRotation(goal.getHeadYaw(), goal.getHeadPitch());
                 }
                 if(goal.hasRotation()) {
+//Logger.getGlobal().info("rotation: "+ goal.getRotation());
                     setRotation(goal.getRotation());
                 }
             }
@@ -131,6 +142,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
 
     @Override
     public void setLocation(Location location) {
+//Logger.getGlobal().info("Teleport!");
         this.location = location.clone();
         this.boundingBox.setLocation(location);
         teleported = true;
@@ -259,4 +271,89 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
     public int getFallDepth() {
         return fallDepth;
     }
+
+    /*Location loc;
+    public void _test_spawn_(Player player) {
+        PacketContainer spawn = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
+        loc = player.getLocation().add(new Vector(1,0,1));
+        spawn.getIntegers().write(0, 100005)
+                .write(1,73);
+        spawn.getUUIDs().write(0, UUID.randomUUID());
+        spawn.getDoubles()
+                .write(0, loc.getX())
+                .write(1, loc.getY())
+                .write(2, loc.getZ());
+        spawn.getBytes()
+                .write(0, (byte) 0) //yaw
+                .write(1, (byte) 0)//pitch
+                .write(2, (byte) 10); //head pitch
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket((Player) player, spawn);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    int _test_turn_ = 0;
+    public void _test_move_() {
+        PacketContainer move = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
+        move.getIntegers().write(0,100005);
+        move.getBytes()
+                .write(0, (byte)(_test_turn_*256/360))
+                .write(1, (byte) (_test_turn_/4*256/360));
+        move.getBooleans().write(0,true);
+        _test_turn_++;
+        if(_test_turn_==360) {
+            _test_turn_ = 0;
+        }
+        try {
+            for (Player viewer : viewers) {
+                ProtocolLibrary.getProtocolManager().sendServerPacket(viewer, move);
+            }
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void _test_move_2() {
+        PacketContainer move = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
+        move.getIntegers().write(0,100005);
+        Player player = Bukkit.getPlayer("Eriol_Eandur");
+        Vector dir = player.getLocation().subtract(loc.toVector()).toVector();
+        dir.normalize().multiply(3);
+        loc.setDirection(dir);
+        dir.multiply(_test_turn_%2==0?1:-1);
+        move.getShorts()
+                .write(0, (short) dir.getBlockX())
+                .write(1, (short) dir.getBlockY())
+                .write(2, (short) dir.getBlockZ());
+        move.getBytes()
+                .write(0, (byte)(loc.getYaw()*256/360))
+                .write(1, (byte) (loc.getPitch()*256/360));
+        _test_turn_++;
+        if(_test_turn_==360) {
+            _test_turn_ = 0;
+        }
+
+        //move.getBytes()
+          //      .write(0, (byte)(loc.getYaw()*256/360))
+            //    .write(1, (byte) (loc.getPitch()*256/360));
+        move.getBooleans().write(0,true);
+
+        PacketContainer look = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
+        look.getIntegers().write(0,100005);
+        look.getBytes().write(0,(byte)(loc.getYaw()*256/360));
+
+        dir.multiply(1.0/(32*128));
+        loc.add(dir);
+        try {
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player,look);
+            ProtocolLibrary.getProtocolManager().sendServerPacket(player,move);
+            //Logger.getGlobal().info("send movelook to : "+player.getName()+" "+move.getBytes().read(0)
+             //       +" "+move.getBytes().read(1));
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }*/
 }

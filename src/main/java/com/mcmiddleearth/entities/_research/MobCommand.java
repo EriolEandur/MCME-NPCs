@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class MobCommand implements CommandExecutor {
 
@@ -92,15 +93,15 @@ public class MobCommand implements CommandExecutor {
             @Override
             public void run() {
                 if(counter<400) {
-                    /*PacketContainer move = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
+                    PacketContainer move = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
                     move.getIntegers().write(0,100002);
                     Vector dir = player.getLocation().subtract(loc.toVector()).toVector();
                     dir.normalize().multiply(300);
                     loc.setDirection(dir);
                     move.getShorts()
-                            .write(0, (short) dir.getBlockX())
-                            .write(1, (short) dir.getBlockY())
-                            .write(2, (short) dir.getBlockZ());
+                            .write(0, (short) 1)//dir.getBlockX())
+                            .write(1, (short) 0)//dir.getBlockY())
+                            .write(2, (short) 0);//dir.getBlockZ());
                     move.getBytes()
                             .write(0, (byte)(loc.getYaw()*256/360))
                             .write(1, (byte) (loc.getPitch()*256/360));
@@ -113,11 +114,13 @@ public class MobCommand implements CommandExecutor {
                     dir.multiply(1.0/(32*128));
                     loc.add(dir);
                     try {
-                        manager.sendServerPacket(player,look);
+                        //manager.sendServerPacket(player,look);
                         manager.sendServerPacket(player,move);
+                        Logger.getGlobal().info("send movelook to : "+player.getName()+" "+move.getBytes().read(0)
+                                +" "+move.getBytes().read(1));
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();
-                    }*/
+                    }
                     counter++;
                 } else {
                     cancel();

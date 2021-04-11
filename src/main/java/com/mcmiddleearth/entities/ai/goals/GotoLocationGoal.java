@@ -11,12 +11,12 @@ public class GotoLocationGoal extends LocationTargetingGoal {
     }
 
     @Override
-    public void updatePath() {
+    public void update() {
 
     }
 
     @Override
-    public void updateTick() {
+    public void doTick() {
 
     }
 }

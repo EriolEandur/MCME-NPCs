@@ -6,6 +6,8 @@ import com.mcmiddleearth.entities.entities.SimpleEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import java.util.logging.Logger;
+
 public class SimpleEntityTeleportPacket extends AbstractPacket {
 
     private final PacketContainer teleport;
@@ -35,6 +37,7 @@ public class SimpleEntityTeleportPacket extends AbstractPacket {
 
     @Override
     public void send(Player recipient) {
+//Logger.getGlobal().info("send teleport to : "+recipient.getName());
         send(teleport,recipient);
     }
 

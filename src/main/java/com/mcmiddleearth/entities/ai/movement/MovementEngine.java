@@ -9,6 +9,7 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class MovementEngine {
 
@@ -24,11 +25,15 @@ public class MovementEngine {
     }
 
     public void calculateMovement(Vector direction) {
+Logger.getGlobal().info("direction: "+direction);
+        if(direction == null) return;
         switch(entity.getMovementType()) {
             case FLYING:
+            case WALKING:
                 Vector velocity = direction.normalize().multiply(getFlyingSpeed());
                 if(cannotMove()) {
                     velocity = new Vector(0,0,0);
+Logger.getGlobal().info("cant move");
                 }
                 entity.setVelocity(velocity);
                 break;
@@ -44,7 +49,7 @@ public class MovementEngine {
                 }
                 entity.setVelocity(velocity);
                 break;
-            case WALKING:
+            default:
                 velocity = direction.normalize().multiply(getGenericSpeed());
                 velocity.setY(0);
                 if(cannotMove()) {

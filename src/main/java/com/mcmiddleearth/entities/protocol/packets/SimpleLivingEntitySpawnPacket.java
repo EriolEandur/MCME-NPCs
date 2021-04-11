@@ -33,13 +33,14 @@ public class SimpleLivingEntitySpawnPacket extends AbstractPacket {
                 .write(1, loc.getY())
                 .write(2, loc.getZ());
         spawn.getBytes()
-                .write(0, (byte)(loc.getPitch()*256/360))
+                .write(0, (byte) (loc.getPitch()*256/360))
                 .write(1, (byte) (loc.getPitch()*256/360))
                 .write(2,(byte) (loc.getYaw()*256/360));
     }
 
     @Override
     public void send(Player recipient) {
+//Logger.getGlobal().info("send living spawn to : "+recipient.getName());
         send(spawn, recipient);
     }
 

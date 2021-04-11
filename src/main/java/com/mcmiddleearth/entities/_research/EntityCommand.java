@@ -113,15 +113,15 @@ public class EntityCommand implements CommandExecutor {
             @Override
             public void run() {
                 if(counter<400) {
-                    PacketContainer move = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
+                    PacketContainer move = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
                     move.getIntegers().write(0,100003);
                     Vector dir = player.getLocation().subtract(loc.toVector()).toVector();
                     dir.normalize().multiply(300);
                     loc.setDirection(dir);
-                    move.getShorts()
+                    /*move.getShorts()
                             .write(0, (short) dir.getBlockX())
                             .write(1, (short) dir.getBlockY())
-                            .write(2, (short) dir.getBlockZ());
+                            .write(2, (short) dir.getBlockZ());*/
                     move.getBytes()
                             .write(0, (byte)(loc.getYaw()*256/360))
                             .write(1, (byte) (loc.getPitch()*256/360));
@@ -132,9 +132,9 @@ public class EntityCommand implements CommandExecutor {
                     look.getBytes().write(0,(byte)(loc.getYaw()*256/360));
 
                     dir.multiply(1.0/(32*128));
-                    loc.add(dir);
+                    //loc.add(dir);
                     try {
-                        manager.sendServerPacket(player,look);
+                        //manager.sendServerPacket(player,look);
                         manager.sendServerPacket(player,move);
                     } catch (InvocationTargetException e) {
                         e.printStackTrace();

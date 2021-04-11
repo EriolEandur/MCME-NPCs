@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class WalkingPathfinder implements Pathfinder{
 
@@ -20,7 +21,7 @@ public class WalkingPathfinder implements Pathfinder{
 
     private Vector target;
 
-    private int maxPathLength = 200;
+    private int maxPathLength = 50;
 
     private PathMarker leaveWall, current;
     private int leaveWallIndex = -1;
@@ -46,7 +47,8 @@ public class WalkingPathfinder implements Pathfinder{
 
     @Override
     public Path getPath(Vector start) {
-        fail = false;
+//Logger.getGlobal().info("findPath start: "+start);
+//Logger.getGlobal().info("findPath target: "+target);
         path = new Path(target);
         current = new PathMarker(0,start);
         step = 0;
@@ -55,6 +57,7 @@ public class WalkingPathfinder implements Pathfinder{
                 path.shortcut(current.getPoint(), leaveWallIndex);
                 leaveWallIndex = -1;
                 current = new PathMarker(leaveWall);//start = path.get(path.size()-1);
+//Logger.getGlobal().info("current after shortcut: "+current.getPoint());
                 //this.setLocation(start.x, start.y);
                 //this.setRotation(leaveWallRotation);
                 // nachricht("rotation: "+this.getRotation()+"   x: "+getX()+" y: "+getY());
@@ -73,27 +76,28 @@ public class WalkingPathfinder implements Pathfinder{
 //                current.getPoint().getZ()),new ItemStack(Material.STONE));
                 step++;
                 current.move(next.getPoint().getY());
+//Logger.getGlobal().info("current: "+current.getPoint()+" - "+current.getRotation());
             } else {
-                followRightSideWall = random.nextBoolean();
+//Logger.getGlobal().info("follow Wall");
                 //followRight = false;
                 current.turn(!followRightSideWall);
                 followWall(followRightSideWall);
             }
         }
-        if(path.isComplete()) {
+        //if(path.isComplete()) {
+//path.getPoints().forEach(vector -> {
+//    System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
+//);
             path.optimise(entity.getJumpHeight(), entity.getFallDepth());
-            path.getPoints().forEach(vector -> {
-                entity.getLocation().getWorld().dropItem(new Location(entity.getLocation().getWorld(),
-                                                                       vector.getX(),
-                                                                       vector.getY(),
-                                                                       vector.getZ()), new ItemStack(Material.BEACON));
-                System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
-            );
+//Logger.getGlobal().info("optimise");
+//path.getPoints().forEach(vector -> {
+//    System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
+//);
 
             return path;
-        } else {
-            return null;
-        }
+        //} else {
+        //    return null;
+        //}
     }
 
     public void followWall(boolean rightSide) {
@@ -144,14 +148,14 @@ public class WalkingPathfinder implements Pathfinder{
 
     public int getTargetDirection(Vector start) {
         Vector diff = target.clone().subtract(start);
-        if(Math.abs(diff.getBlockX())>Math.abs(diff.getBlockZ())) {
-            if(diff.getBlockX()>0) {
+        if(Math.abs(diff.getX())>Math.abs(diff.getZ())) {
+            if(diff.getX()>0) {
                 return 0;
             } else {
                 return 180;
             }
         } else {
-            if(diff.getBlockZ()>0) {
+            if(diff.getZ()>0) {
                 return 90;
             } else {
                 return 270;

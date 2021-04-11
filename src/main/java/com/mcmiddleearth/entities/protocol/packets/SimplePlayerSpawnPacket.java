@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
+import java.util.logging.Logger;
 
 public class SimplePlayerSpawnPacket extends AbstractPacket {
 
@@ -49,6 +50,7 @@ public class SimplePlayerSpawnPacket extends AbstractPacket {
 
     @Override
     public void send(Player recipient) {
+//Logger.getGlobal().info("send player spawn to : "+recipient.getName());
         send(info, recipient);
         send(spawn, recipient);
     }

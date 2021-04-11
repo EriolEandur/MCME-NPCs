@@ -33,7 +33,7 @@ public class SimpleEntityMovePacket extends AbstractPacket {
         stand.getIntegers().write(0, entity.getEntityId());
 
         head = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
-        stand.getIntegers().write(0, entity.getEntityId());
+        head.getIntegers().write(0, entity.getEntityId());
 
         update();
     }
@@ -53,33 +53,34 @@ public class SimpleEntityMovePacket extends AbstractPacket {
             case LOOK:
                 byte yaw = getAngle(entity.getRotation());
                 byte pitch = getAngle(entity.getLocation().getPitch());
-                move.getBytes()
+                look.getBytes()
                         .write(0, yaw)
                         .write(1, pitch);
-                move.getBooleans().write(0,entity.onGround());
+                look.getBooleans().write(0,entity.onGround());
                 break;
             case MOVE_LOOK:
                 dir = getShift();
                 yaw = getAngle(entity.getRotation());
                 pitch = getAngle(entity.getLocation().getPitch());
+//Logger.getGlobal().info("write packet: "+yaw+" "+pitch+" head: "+getAngle(entity.getLocation().getYaw()));
                 moveLook.getShorts()
                         .write(0, (short) dir.getBlockX())
                         .write(1, (short) dir.getBlockY())
                         .write(2, (short) dir.getBlockZ());
-                move.getBytes()
+                moveLook.getBytes()
                         .write(0, yaw)
                         .write(1, pitch);
-                move.getBooleans().write(0,entity.onGround());
+                moveLook.getBooleans().write(0,entity.onGround());
                 break;
         }
         if(entity.hasLookUpdate()) {
-            look.getBytes().write(0,getAngle(entity.getLocation().getYaw()));
+            head.getBytes().write(0,getAngle(entity.getLocation().getYaw()));
         }
     }
 
     @Override
     public void send(Player recipient) {
-        //Logger.getGlobal().info(""+moveType.name());
+//Logger.getGlobal().info(""+moveType.name());
         switch(moveType) {
             case STAND:
                 //send(stand, recipient); //probably not required to send
@@ -88,6 +89,8 @@ public class SimpleEntityMovePacket extends AbstractPacket {
                 send(move, recipient);
                 break;
             case MOVE_LOOK:
+//Logger.getGlobal().info("send movelook to : "+recipient.getName()+" "+moveLook.getBytes().read(0)
+//                                                        +" "+moveLook.getBytes().read(1));
                 send(moveLook, recipient);
                 break;
             case LOOK:
@@ -103,14 +106,13 @@ public class SimpleEntityMovePacket extends AbstractPacket {
     }
 
     private byte getAngle(float bukkitAngle) {
-
         return (byte)(bukkitAngle*256/360);
     }
 
     private MoveType getMoveType() {
         Vector velocity = entity.getVelocity();
         if(velocity.getX() == 0 && velocity.getY() == 0 && velocity.getZ() == 0) {
-            if(entity.hasLookUpdate() || entity.hasLookUpdate()) {
+            if(entity.hasLookUpdate() || entity.hasRotationUpdate()) {
                 return MoveType.LOOK;
             } else {
                 return MoveType.STAND;

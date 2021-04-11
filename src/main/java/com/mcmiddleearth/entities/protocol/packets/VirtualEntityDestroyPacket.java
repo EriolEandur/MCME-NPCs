@@ -4,6 +4,8 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import org.bukkit.entity.Player;
 
+import java.util.logging.Logger;
+
 public class VirtualEntityDestroyPacket extends AbstractPacket {
 
     PacketContainer destroy;
@@ -15,6 +17,7 @@ public class VirtualEntityDestroyPacket extends AbstractPacket {
 
     @Override
     public void send(Player recipient) {
+//Logger.getGlobal().info("send destroy to : "+recipient.getName());
         send(destroy, recipient);
     }
 }

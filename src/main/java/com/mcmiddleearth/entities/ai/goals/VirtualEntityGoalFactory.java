@@ -6,7 +6,6 @@ import com.mcmiddleearth.entities.ai.pathfinding.WalkingPathfinder;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import org.bukkit.Location;
-import org.graalvm.compiler.lir.aarch64.AArch64Move;
 
 public class VirtualEntityGoalFactory {
 

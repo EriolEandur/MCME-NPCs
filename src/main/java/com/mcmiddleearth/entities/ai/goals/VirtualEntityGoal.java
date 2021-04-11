@@ -9,17 +9,11 @@ public abstract class VirtualEntityGoal implements Goal{
 
     private GoalType type;
 
-    private VirtualEntity entity;
-
-    protected Vector direction;
-
-    protected boolean rotation, headRotation;
-
-    protected float yaw, headYaw, headPitch;
+    private final VirtualEntity entity;
 
     private int updateInterval = 10;
 
-    private int updateRandom;
+    private final int updateRandom;
 
     public VirtualEntityGoal(GoalType type, VirtualEntity entity) {
         this.type = type;
@@ -27,33 +21,21 @@ public abstract class VirtualEntityGoal implements Goal{
         updateRandom = new Random().nextInt(updateInterval);
     }
 
-    public Vector getDirection() {
-        return direction;
-    }
+    public abstract Vector getDirection();
 
-    public boolean hasHeadRotation() {
-        return headRotation;
-    }
+    public abstract boolean hasHeadRotation();
 
-    public float getHeadYaw() {
-        return headYaw;
-    }
+    public abstract float getHeadYaw();
 
-    public float getHeadPitch() {
-        return headPitch;
-    }
+    public abstract float getHeadPitch();
 
-    public boolean hasRotation() {
-        return rotation;
-    }
+    public abstract boolean hasRotation();
 
-    public float getRotation() {
-        return yaw;
-    }
+    public abstract float getRotation();
 
-    public abstract void updatePath();
+    public abstract void update();
 
-    public abstract void updateTick();
+    public abstract void doTick();
 
     public VirtualEntity getEntity() {
         return entity;

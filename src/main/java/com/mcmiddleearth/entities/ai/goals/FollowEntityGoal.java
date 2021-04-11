@@ -3,8 +3,6 @@ package com.mcmiddleearth.entities.ai.goals;
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
 import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
-import org.bukkit.Location;
-import org.bukkit.util.Vector;
 
 public class FollowEntityGoal extends EntityTargetingGoal {
 
@@ -12,24 +10,25 @@ public class FollowEntityGoal extends EntityTargetingGoal {
         super(type, entity, pathfinder, target);
     }
 
+    //todo: stop movement when close to target
     @Override
-    public void updatePath() {
-        getPathfinder().setTarget(getTarget().getLocation().toVector());
-        findPath(getEntity().getLocation().toVector());
-        updateWaypoint();
-        rotation = true;
-        yaw = getEntity().getLocation().clone().setDirection(getDirection()).getYaw();
+    public void doTick() {
+        super.doTick();
+        if(isCloseToTarget()) {
+            deletePath();
+            setRotation(getEntity().getLocation().clone().setDirection(getTarget().getLocation().toVector()
+                                                         .subtract(getEntity().getLocation().toVector())).getYaw());
+        }
     }
 
     @Override
-    public void updateTick() {
-        rotation = false;
-        headRotation = true;
-        Location targetDir = getEntity().getLocation().clone()
-                                        .setDirection(target.getLocation().toVector()
-                                                            .subtract(getEntity().getLocation().toVector()));
-        headPitch = targetDir.getPitch();
-        headYaw = targetDir.getYaw();
-        //head rotation
+    public void update() {
+        if(!isCloseToTarget()) {
+            super.update();
+        }
+    }
+
+    private boolean isCloseToTarget() {
+        return getEntity().getLocation().toVector().distanceSquared(getTarget().getLocation().toVector()) < 4;
     }
 }

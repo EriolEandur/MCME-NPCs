@@ -10,20 +10,23 @@ public class Path {
 
     private Set<Vector> unordered = new HashSet<>();
 
-    private Vector start;
     private final Vector target;
 
     public Path(Vector target) {
         this.target = target;
     }
 
-    public void  addPoint(Vector point) {
-        ordered.add(point);
-        unordered.add(point);
+    public void addPoint(Vector point) {
+        ordered.add(point.clone());
+        unordered.add(getBlockVector(point));
     }
 
     public List<Vector> getPoints() {
         return ordered;
+    }
+
+    public Vector getBlockVector(Vector point) {
+        return new Vector(point.getBlockX(),point.getBlockY(),point.getBlockZ());
     }
 
     public Vector get(int i) {
@@ -47,16 +50,19 @@ public class Path {
     public void setStart(Vector start) {
         if(this.contains(start)) {
             while(!ordered.get(0).equals(start)) {
-                unordered.remove(ordered.get(0));
+                unordered.remove(getBlockVector(ordered.get(0)));
                 ordered.remove(0);
             }
-            this.start = start;
             //this.unordered = new HashSet<>(ordered);
         }
     }
 
     public Vector getStart() {
-        return start;
+        return ordered.get(0);
+    }
+
+    public Vector getTarget() {
+        return target;
     }
 
     public Vector getEnd() {
@@ -80,7 +86,7 @@ public class Path {
     }
 
     public boolean contains(Vector point) {
-        return unordered.contains(point);
+        return unordered.contains(getBlockVector(point));
     }
 
     public void shortcut(Vector shortcutStart, int endIndex) {
@@ -94,7 +100,6 @@ public class Path {
         newPoints.add(ordered.get(index));
         index++;
         while(index < ordered.size()) {
-            Vector temp = ordered.get(index);
             index++;
         }
         index = ordered.size()-1;
@@ -103,7 +108,8 @@ public class Path {
             index--;
         }
         ordered = newPoints;
-        unordered = new HashSet<>(ordered);
+        unordered = new HashSet<>();
+        ordered.forEach(point -> unordered.add(getBlockVector(point)));
     }
 
     public void optimise(int jumpHeight, int fallDepth) {
@@ -125,7 +131,8 @@ public class Path {
                         newPoints.add(ordered.get(i));
                     }
                     ordered = newPoints;
-                    unordered = new HashSet<>(ordered);
+                    unordered = new HashSet<>();
+                    ordered.forEach(point -> unordered.add(getBlockVector(point)));
                     break;
                 }
                 endIndex--;
