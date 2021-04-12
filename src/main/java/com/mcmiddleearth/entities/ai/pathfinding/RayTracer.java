@@ -5,6 +5,7 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class RayTracer<T> {
 
@@ -15,13 +16,13 @@ public class RayTracer<T> {
     private RayTraceResultColumn next;
 
     private final int stepX, stepZ;
-    private int blockX;
-    private final int  blockEndX;
+    private int blockX, lastStartZ;
+    private final int  blockStartX, blockEndX;
 
     private final Vector start;
     private final Vector traceVector;
 
-    private double mz, myx, myz;
+    private final double mz, myx, myz;
 
     TriFunction<Integer, Integer, Integer, T> calculator;
 
@@ -34,13 +35,9 @@ public class RayTracer<T> {
         mz = traceVector.getZ() / traceVector.getX();
         myx = traceVector.getY() / traceVector.getX();
         myz = traceVector.getY() / traceVector.getZ();
-        if(stepX<0) {
-            blockX = start.getBlockX();
-            blockEndX = (int) (start.getX()+traceVector.getX())+1;
-        } else {
-            blockX = start.getBlockX() + 1;
-            blockEndX = (int) (start.getX()+traceVector.getX());
-        }
+        blockStartX = start.getBlockX();
+        blockEndX = getBlock(start.getX()+traceVector.getX());
+        blockX = blockStartX;
     }
 
     public void traceStep() {
@@ -52,6 +49,8 @@ public class RayTracer<T> {
         blockX += stepX;
         if(blockX <= blockEndX) {
             next = createResultColumn();
+        } else {
+            next = null;
         }
         //result = new RayTraceResultColumn[blockEndX- blockX +1];
         //while(blockX != blockEndX) {
@@ -62,8 +61,9 @@ public class RayTracer<T> {
         int maxZ = Integer.MIN_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (Ray ray : rays) {
-            int rayY = (int) ray.getY(blockX);
-            int rayZ = (int) ray.getZ(blockX);
+            int rayX = (stepX>0?blockX+1:blockX);
+            int rayY = getBlock(ray.getY(rayX));
+            int rayZ = getBlock(ray.getZ(rayX));
             if (rayY > maxY) {
                 maxY = rayY;
             }
@@ -74,11 +74,34 @@ public class RayTracer<T> {
                 minZ = rayZ;
             }
         }
-        int[] blockYs = new int[maxZ - minZ +1];
-        for(int i = 0; i < blockYs.length; i++) {
-            blockYs[i] = maxY + (int) (myz * i);
+        int startZ, lengthZ;
+        if(stepZ>0) {
+            startZ = Math.min(minZ, lastStartZ);
+            if(blockX == blockStartX) {
+                startZ = start.getBlockZ();
+            }
+            if(blockX == blockEndX) {
+                maxZ = getBlock(start.getBlockZ()+traceVector.getZ());
+            }
+            lengthZ = maxZ - startZ + 1;
+        } else {
+            startZ = Math.max(maxZ, lastStartZ);
+            if(blockX == blockStartX) {
+                startZ = start.getBlockZ();
+            }
+            if(blockX == blockEndX) {
+                minZ = getBlock(start.getBlockZ()+traceVector.getZ());
+            }
+            lengthZ = startZ - minZ +1;
         }
-        return new RayTraceResultColumn(blockX, minZ, blockYs);
+        lastStartZ = startZ;
+Logger.getGlobal().info("blockStartX:"+blockStartX+" blockX:"+blockX+" blockEndX:"+blockEndX);
+Logger.getGlobal().info("minZ:"+minZ+" maxZ"+maxZ+" startZ:"+startZ+" lenngthZ:"+lengthZ);
+        int[] blockYs = new int[lengthZ];
+        for(int i = 0; i < blockYs.length; i++) {
+            blockYs[i] = maxY + getBlock(myz * i);
+        }
+        return new RayTraceResultColumn(blockX, startZ, blockYs);
     }
 
     public void addRay(Vector start) {
@@ -86,11 +109,11 @@ public class RayTracer<T> {
     }
 
     public int first() {
-        return start.getBlockX();
+        return blockStartX;
     }
 
     public int last() {
-        return start.getBlockX()+ stepX*(rays.size()-1);
+        return blockEndX;//start.getBlockX()+ stepX*(rays.size()-1);
     }
 
     public int stepX() {
@@ -115,6 +138,10 @@ public class RayTracer<T> {
 
     private T calculateValue(int x, int y, int z) {
         return calculator.apply(x,y,z);
+    }
+
+    private int getBlock(double cord) {
+        return (int) Math.floor(cord);
     }
 
     public class RayTraceResultColumn {
