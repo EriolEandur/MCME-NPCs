@@ -102,7 +102,7 @@ public class SimpleEntityMovePacket extends AbstractPacket {
     }
 
     private Vector getShift() {
-        return entity.getVelocity().multiply(32*128);
+        return entity.getVelocity().clone().multiply(32*128);
     }
 
     private byte getAngle(float bukkitAngle) {

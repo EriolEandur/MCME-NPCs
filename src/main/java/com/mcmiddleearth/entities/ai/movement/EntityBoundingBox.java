@@ -102,11 +102,11 @@ public class EntityBoundingBox {
 
     public static EntityBoundingBox getBoundingBox(McmeEntityType type) {
         if(type.isCustomType()) {
-            return new EntityBoundingBox(0.3,0.3,-1.5,0.5);
+            return new EntityBoundingBox(0.3,0.3,0,2);
         } else {
             switch(type.getBukkitEntityType()) {
                 default:
-                    return new EntityBoundingBox(0.3, 0.3, -1.5, 0.5);
+                    return new EntityBoundingBox(0.3, 0.3, 0, 2);
             }
         }
     }

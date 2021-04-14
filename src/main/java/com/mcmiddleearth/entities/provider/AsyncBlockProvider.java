@@ -22,7 +22,7 @@ public class AsyncBlockProvider implements BlockProvider {
     }
 
     @Override
-    public double blockTopY(int x, int y, int z) {
+    public double blockTopY(int x, int y, int z, int range) {
         return 0;
     }
 }

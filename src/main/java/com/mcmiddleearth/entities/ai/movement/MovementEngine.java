@@ -25,19 +25,24 @@ public class MovementEngine {
     }
 
     public void calculateMovement(Vector direction) {
-Logger.getGlobal().info("direction: "+direction);
+//Logger.getGlobal().info("direction: "+direction);
         if(direction == null) return;
         switch(entity.getMovementType()) {
             case FLYING:
             case WALKING:
+Logger.getGlobal().info("location: "+ entity.getLocation());
+Logger.getGlobal().info("speed: "+ getFlyingSpeed());
                 Vector velocity = direction.normalize().multiply(getFlyingSpeed());
+Logger.getGlobal().info("velocity: "+ velocity);
                 if(cannotMove()) {
                     velocity = new Vector(0,0,0);
 Logger.getGlobal().info("cant move");
                 }
+//Logger.getGlobal().info("speed: "+getFlyingSpeed()+" velocity: "+velocity);
                 entity.setVelocity(velocity);
                 break;
             case FALLING:
+Logger.getGlobal().info("FALLING");
                 velocity = entity.getVelocity().add(gravity);
                 if(cannotMove()) {
                     velocity.setX(0);
@@ -50,6 +55,7 @@ Logger.getGlobal().info("cant move");
                 entity.setVelocity(velocity);
                 break;
             default:
+Logger.getGlobal().info("DEFAULT");
                 velocity = direction.normalize().multiply(getGenericSpeed());
                 velocity.setY(0);
                 if(cannotMove()) {
@@ -83,15 +89,15 @@ Logger.getGlobal().info("cant move");
 
     public double distanceToGround() {
         BoundingBox entityBB = entity.getBoundingBox().getBoundingBox().clone();
-        return distanceToGround(entityBB);
+        return distanceToGround(entityBB, entity.getJumpHeight()+1);
     }
 
-    private double distanceToGround(BoundingBox boundingBox) {
+    private double distanceToGround(BoundingBox boundingBox, int range) {
         double distance = Double.MAX_VALUE;
         for (int i = (int) boundingBox.getMinX(); i <= boundingBox.getMaxX(); i++) {
             for (int j = (int) boundingBox.getMinZ(); j <= boundingBox.getMaxZ(); j++) {
                 int y = (int) boundingBox.getMinY();
-                double thisDistance = boundingBox.getMinY() - blockProvider.blockTopY(i,y,j);
+                double thisDistance = boundingBox.getMinY() - blockProvider.blockTopY(i,y,j, range);
                 if(thisDistance < distance){
                     distance = thisDistance;
                 }
@@ -103,7 +109,7 @@ Logger.getGlobal().info("cant move");
     public double jumpHeight() {
         BoundingBox entityBB = entity.getBoundingBox().getBoundingBox().clone();
         entityBB.shift(new Vector(entity.getVelocity().getX(),0,entity.getVelocity().getZ()));
-        return - distanceToGround(entityBB);
+        return - distanceToGround(entityBB, entity.getJumpHeight()+1);
     }
 
     private double getFlyingSpeed() {
@@ -116,7 +122,7 @@ Logger.getGlobal().info("cant move");
 
     private double getGenericSpeed() {
         AttributeInstance instance = entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED);
-        return (instance!=null?instance.getValue():0);
+        return (instance!=null?instance.getValue():0.1);
     }
 
     private double getJumpHeight() {

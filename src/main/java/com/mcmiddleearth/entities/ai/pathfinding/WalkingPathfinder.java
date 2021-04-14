@@ -3,15 +3,10 @@ package com.mcmiddleearth.entities.ai.pathfinding;
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import com.mcmiddleearth.entities.provider.BlockProvider;
-import com.mcmiddleearth.entities.provider.SyncBlockProvider;
-import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
-import java.util.logging.Logger;
 
 public class WalkingPathfinder implements Pathfinder{
 
@@ -28,17 +23,14 @@ public class WalkingPathfinder implements Pathfinder{
 
     private boolean followRightSideWall;
 
-    private final Random random;
-
     private Path path;
 
     boolean fail;
     int step;
     public WalkingPathfinder(VirtualEntity entity) {
         this.entity = entity;
-        this.target = entity.getLocation().toVector();
+        this.target = getBlockCenterXZ(entity.getLocation().toVector());
         this.blockProvider = EntitiesPlugin.getEntityServer().getBlockProvider(entity.getLocation().getWorld().getUID());
-        this.random = new Random();
     }
 
     public void setMaxPathLength(int maxPathLength) {
@@ -50,8 +42,9 @@ public class WalkingPathfinder implements Pathfinder{
 //Logger.getGlobal().info("findPath start: "+start);
 //Logger.getGlobal().info("findPath target: "+target);
         path = new Path(target);
-        current = new PathMarker(0,start);
+        current = new PathMarker(0, getBlockCenterXZ(start));
         step = 0;
+        fail = false;
         while(!path.isComplete() && !fail && step < maxPathLength) {
             if(path.contains(current.getPoint()) && leaveWall != null) {
                 path.shortcut(current.getPoint(), leaveWallIndex);
@@ -165,7 +158,8 @@ public class WalkingPathfinder implements Pathfinder{
 
     private void moveMarker(PathMarker next) {
         next.move(next.getPoint().getY());
-        double blockY = blockProvider.blockTopY(next.getPoint().getBlockX(),next.getPoint().getBlockY(),next.getPoint().getBlockZ());
+        double blockY = blockProvider.blockTopY(next.getPoint().getBlockX(),next.getPoint().getBlockY(),next.getPoint().getBlockZ(),
+                                                entity.getJumpHeight()+1);
         next.getPoint().setY(blockY);
     }
 
@@ -178,6 +172,15 @@ public class WalkingPathfinder implements Pathfinder{
     @Override
     public void setTarget(Vector target) {
         this.target = target;
+    }
+
+    @Override
+    public Vector getTarget() {
+        return target;
+    }
+
+    private Vector getBlockCenterXZ(Vector vector) {
+        return new Vector(vector.getBlockX()+0.5,vector.getY(), vector.getBlockZ()+0.5);
     }
 
     public static class PathMarker {

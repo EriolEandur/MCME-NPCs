@@ -29,17 +29,19 @@ public class SyncBlockProvider implements BlockProvider {
     }
 
     @Override
-    public double blockTopY(int x, int y, int z) {
+    public double blockTopY(int x, int y, int z, int range) {
+        int yStart = y;
         if (!isPassable(x, y, z)) {
             do {
                 y++;
-            } while (!isPassable(x, y, z) && y < world.getMaxHeight());
+            } while (!isPassable(x, y, z) && y < world.getMaxHeight() && y <= yStart+range);
             y--; //y at lowest non-passable block;
         } else {
             do {
                 y--;
-            } while (isPassable(x, y, z) && y > 1);
+            } while (isPassable(x, y, z) && y > 1 && y >= yStart-range);
         }
+//Logger.getGlobal().info("blockTopY: x:"+x+" y:"+yStart+" z:"+z+" range:"+range+" found y: "+y);
         return getBoundingBox(x,y,z).getMaxY();
     }
 

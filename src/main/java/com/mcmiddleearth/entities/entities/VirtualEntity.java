@@ -103,7 +103,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
                     case WALKING:
                         goal.doTick();
                 }
-                //movementEngine.calculateMovement(goal.getDirection());
+                movementEngine.calculateMovement(goal.getDirection());
                 if(goal.hasHeadRotation()) {
 //Logger.getGlobal().info("head rotation: "+ goal.getHeadYaw()+" "+goal.getHeadPitch());
                     setHeadRotation(goal.getHeadYaw(), goal.getHeadPitch());
@@ -129,7 +129,11 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
     }
 
     public void move() {
+Logger.getGlobal().info("move");
+Logger.getGlobal().info("location old: "+ getLocation());
+Logger.getGlobal().info("velocity: "+ velocity);
         location = location.add(velocity);
+Logger.getGlobal().info("location new: "+ getLocation());
         boundingBox.setLocation(location);
 
         movePacket.update();

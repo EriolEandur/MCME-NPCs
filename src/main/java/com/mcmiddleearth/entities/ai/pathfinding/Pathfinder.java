@@ -8,4 +8,6 @@ public interface Pathfinder {
 
     void setTarget(Vector target);
 
+    Vector getTarget();
+
 }

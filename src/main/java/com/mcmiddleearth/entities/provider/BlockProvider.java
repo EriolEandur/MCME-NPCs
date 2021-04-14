@@ -14,5 +14,6 @@ public interface BlockProvider {
 
     public boolean isPassable(int x, int y, int z);
 
-    public double blockTopY(int x, int y, int z);
+    public double blockTopY(int x, int y, int z, int range);
+
 }

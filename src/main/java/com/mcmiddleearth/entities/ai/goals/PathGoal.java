@@ -5,11 +5,8 @@ import com.mcmiddleearth.entities.ai.pathfinding.Path;
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
 import com.mcmiddleearth.entities.ai.pathfinding.RayTracer;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
-import org.bukkit.Location;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
-
-import java.util.logging.Logger;
 
 public abstract class PathGoal extends VirtualEntityGoal {
 
@@ -29,14 +26,16 @@ public abstract class PathGoal extends VirtualEntityGoal {
 
     @Override
     public void update() {
-//Logger.getGlobal().info("target "+getEntity().getLocation().toVector().getBlockX()+" "
-   //                                 +getEntity().getLocation().toVector().getBlockY()+" "
-     //                               +getEntity().getLocation().toVector().getBlockZ());
+//Logger.getGlobal().info("find path from: "+getEntity().getLocation().toVector().getBlockX()+" "
+//        +getEntity().getLocation().toVector().getBlockY()+" "
+//        +getEntity().getLocation().toVector().getBlockZ());
+//Logger.getGlobal().info("find path to target: "+pathfinder.getTarget());
         findPath(getEntity().getLocation().toVector());
+//Logger.getGlobal().info("Found path: "+path+" complete: "+path.isComplete());
         updateWaypoint();
         if(waypoint!=null) {
             hasRotation = true;
-Logger.getGlobal().info("waypoint "+waypoint);
+//Logger.getGlobal().info("waypoint "+waypoint);
             rotation = getEntity().getLocation().clone().setDirection(waypoint).getYaw();
         }
     }
@@ -91,11 +90,11 @@ Logger.getGlobal().info("waypoint "+waypoint);
     }
 
     public void updateWaypoint() {
-Logger.getGlobal().info("update Waypoint: start "+path+" "+path.getEnd());
+//Logger.getGlobal().info("update Waypoint: start "+path+" "+path.getEnd());
         if(path!=null && path.getEnd()!=null) {
             int index = path.length()-1;
             while(!isDirectWayClear(path.get(index)) && index >= 0) {
-Logger.getGlobal().info("update Waypoint: "+index);
+//Logger.getGlobal().info("update Waypoint: "+index);
                 index --;
             }
             waypoint = path.get(index).clone();
@@ -104,10 +103,14 @@ Logger.getGlobal().info("update Waypoint: "+index);
 
     private boolean isDirectWayClear(Vector target) {
         Vector targetDirection = target.clone().subtract(getEntity().getLocation().toVector());
+//Logger.getGlobal().info("entity: "+getEntity().getLocation());
+//Logger.getGlobal().info("target: "+target);
+//Logger.getGlobal().info("Trace Vector: "+targetDirection);
         RayTracer<Double> tracer = new RayTracer<>(getEntity().getLocation().toVector(),targetDirection,
                 (x,y,z) -> EntitiesPlugin.getEntityServer().getBlockProvider(getEntity().getLocation().getWorld().getUID())
-                                       .blockTopY(x,y,z));
+                                       .blockTopY(x,y,z,getEntity().getJumpHeight()+1));
         BoundingBox boundingBox = getEntity().getBoundingBox().getBoundingBox();
+//Logger.getGlobal().info("BB: min: "+boundingBox.getMin()+" max: "+boundingBox.getMax());
         int jumpHeight = getEntity().getJumpHeight();
         tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMinY(),boundingBox.getMinZ()));
         tracer.addRay(new Vector(boundingBox.getMinX(),boundingBox.getMinY(),boundingBox.getMaxZ()));
@@ -118,25 +121,38 @@ Logger.getGlobal().info("update Waypoint: "+index);
         tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMinZ()));
         tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMaxZ()));
         //tracer.trace();
-Logger.getGlobal().info("Tracer: "+tracer.first()+" *** "+ tracer.last() + " *** "+tracer.stepX());
-        for(int i = tracer.first(); i != tracer.last(); i += tracer.stepX()) {
-Logger.getGlobal().info("trace step");
+//Logger.getGlobal().info("Tracer: first "+tracer.first()+" last "+ tracer.last() + " stepX: "+tracer.stepX()+" stepZ: "+tracer.stepZ());
+        int i = tracer.first();
+        do {
+//Logger.getGlobal().info("trace step");
             tracer.traceStep();
             RayTracer<Double>.RayTraceResultColumn current = tracer.current();//get(i);
             RayTracer<Double>.RayTraceResultColumn next = tracer.next();//get(i+1);
-Logger.getGlobal().info("Current: "+current.first()+" *** "+ current.last() + " *** "+tracer.stepZ());
-            for(int j = current.first(); j != current.last(); j += tracer.stepZ()) {
-Logger.getGlobal().info("compare: "+current.get(j+1)+" - "+current.get(j));
+//Logger.getGlobal().info("Current: x: "+current.getBlockX()+" first: "+current.first()+" last: "+ current.last());
+            int j = current.first();
+            do {
+/*if(current.hasNext(j)) {
+    Logger.getGlobal().info("compare: z: " + j+":  "+ current.getNext(j) + " - " + current.get(j));
+}
 if(next != null && next.has(j)) {
     Logger.getGlobal().info("                              next: "+next.get(j)+" - "+current.get(j));
-}
-                if(current.get(j+1)-current.get(j)>jumpHeight
+}*/
+                if((current.hasNext(j) && current.getNext(j)-current.get(j)>jumpHeight)
                     || (next!=null && (next.has(j) && next.get(j)-current.get(j) > jumpHeight))) {
                     return false;
                 }
-
+                if(j != current.last()) {
+                    j += tracer.stepZ();
+                } else {
+                    break;
+                }
+            } while(true);
+            if(i != tracer.last()) {
+                i += tracer.stepX();
+            } else {
+                break;
             }
-        }
+        } while(true);
         return true;
     }
 

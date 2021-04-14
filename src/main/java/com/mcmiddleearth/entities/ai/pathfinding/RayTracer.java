@@ -5,7 +5,6 @@ import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class RayTracer<T> {
 
@@ -28,13 +27,14 @@ public class RayTracer<T> {
 
     public RayTracer(Vector start, Vector traceVector, TriFunction<Integer, Integer, Integer, T> calculator) {
         this.calculator = calculator;
-        this.start = start;
+        this.start = start.clone();
         this.traceVector = traceVector;
         stepX = (traceVector.getX()>0?1:-1);
         stepZ = (traceVector.getZ()>0?1:-1);
         mz = traceVector.getZ() / traceVector.getX();
         myx = traceVector.getY() / traceVector.getX();
-        myz = traceVector.getY() / traceVector.getZ();
+        myz = traceVector.getY() / (traceVector.getZ()+traceVector.getX()*traceVector.getX()/traceVector.getZ());
+//Logger.getGlobal().info("mZ:"+mz+" myx:"+myx+" myz:"+myz);
         blockStartX = start.getBlockX();
         blockEndX = getBlock(start.getX()+traceVector.getX());
         blockX = blockStartX;
@@ -46,10 +46,11 @@ public class RayTracer<T> {
         } else {
             current = next;
         }
-        blockX += stepX;
-        if(blockX <= blockEndX) {
+        if(blockX != blockEndX) {
+            blockX += stepX;
             next = createResultColumn();
         } else {
+            blockX += stepX;
             next = null;
         }
         //result = new RayTraceResultColumn[blockEndX- blockX +1];
@@ -59,11 +60,12 @@ public class RayTracer<T> {
     private RayTraceResultColumn createResultColumn() {
         int minZ = Integer.MAX_VALUE;
         int maxZ = Integer.MIN_VALUE;
-        int maxY = Integer.MIN_VALUE;
+        int maxY = 1;
         for (Ray ray : rays) {
             int rayX = (stepX>0?blockX+1:blockX);
             int rayY = getBlock(ray.getY(rayX));
             int rayZ = getBlock(ray.getZ(rayX));
+//Logger.getGlobal().info("rayY: "+ray.getY(rayX)+" "+rayY);
             if (rayY > maxY) {
                 maxY = rayY;
             }
@@ -95,8 +97,8 @@ public class RayTracer<T> {
             lengthZ = startZ - minZ +1;
         }
         lastStartZ = startZ;
-Logger.getGlobal().info("blockStartX:"+blockStartX+" blockX:"+blockX+" blockEndX:"+blockEndX);
-Logger.getGlobal().info("minZ:"+minZ+" maxZ"+maxZ+" startZ:"+startZ+" lenngthZ:"+lengthZ);
+//Logger.getGlobal().info("blockStartX:"+blockStartX+" blockX:"+blockX+" blockEndX:"+blockEndX);
+//Logger.getGlobal().info("minZ:"+minZ+" maxZ"+maxZ+" startZ:"+startZ+" lenngthZ:"+lengthZ);
         int[] blockYs = new int[lengthZ];
         for(int i = 0; i < blockYs.length; i++) {
             blockYs[i] = maxY + getBlock(myz * i);
@@ -169,16 +171,31 @@ Logger.getGlobal().info("minZ:"+minZ+" maxZ"+maxZ+" startZ:"+startZ+" lenngthZ:"
             return startZ + stepZ * (blockYs.length-1);
         }
 
+        public int getBlockX() { return blockX; }
+
         public T get(int j) {
             int index = (j-startZ)*stepZ;
             if (rows.get(index)==null) {
-                rows.set(index, calculateValue(blockX,j,blockYs[index]));
+                rows.set(index, calculateValue(blockX,blockYs[index],j));
+            }
+            return rows.get(index);
+        }
+
+        public T getNext(int j) {
+            int index = (j - startZ) * stepZ + 1;
+            if (rows.get(index)==null) {
+                rows.set(index, calculateValue(blockX,blockYs[index],j));
             }
             return rows.get(index);
         }
 
         public boolean has(int j) {
             int index = (j-startZ)*stepZ;
+            return index >= 0 && index < blockYs.length;
+        }
+
+        public boolean hasNext(int j) {
+            int index = (j-startZ)*stepZ + 1;
             return index >= 0 && index < blockYs.length;
         }
     }
