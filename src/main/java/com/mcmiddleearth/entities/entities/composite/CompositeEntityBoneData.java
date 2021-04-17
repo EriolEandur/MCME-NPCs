@@ -7,7 +7,7 @@ import org.bukkit.util.EulerAngle;
 /**
  * Contains data about a part of a composite entity. These data can be used by other plugins to display this part in game using armor stands.
  */
-public interface CompositeEntityPartData {
+public interface CompositeEntityBoneData {
 
     /**
      * Get the location of an armor_stand entity to display this part in game.

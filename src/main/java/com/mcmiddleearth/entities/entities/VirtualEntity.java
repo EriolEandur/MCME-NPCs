@@ -93,16 +93,17 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
             }
         } else {
             if(goal != null) {
-                goal.doTick();
+                goal.doTick(); //tick before update to enable update do special stuff that doesn't get overridden by doTick
                 if(tickCounter%goal.getUpdateInterval()==goal.getUpdateRandom()) {
-//Logger.getGlobal().info("Goal update: "+ tickCounter +" "+ goal.getUpdateInterval() + " "+goal.getUpdateRandom());
                     goal.update();
+//Logger.getGlobal().info("Goal update: "+ tickCounter +" "+ goal.getUpdateInterval() + " "+goal.getUpdateRandom());
+//Logger.getGlobal().info("Goal update: rotation: "+ goal.hasRotation());
                 }
-                switch(movementType) {
+                /*switch(movementType) {
                     case FLYING:
                     case WALKING:
                         goal.doTick();
-                }
+                }*/
                 movementEngine.calculateMovement(goal.getDirection());
                 if(goal.hasHeadRotation()) {
 //Logger.getGlobal().info("head rotation: "+ goal.getHeadYaw()+" "+goal.getHeadPitch());
@@ -129,11 +130,11 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
     }
 
     public void move() {
-Logger.getGlobal().info("move");
-Logger.getGlobal().info("location old: "+ getLocation());
-Logger.getGlobal().info("velocity: "+ velocity);
+//Logger.getGlobal().info("move");
+//Logger.getGlobal().info("location old: "+ getLocation());
+//Logger.getGlobal().info("velocity: "+ velocity+" yaw: "+getRotation()+" head: "+location.getYaw()+" "+location.getPitch());
         location = location.add(velocity);
-Logger.getGlobal().info("location new: "+ getLocation());
+//Logger.getGlobal().info("location new: "+ getLocation());
         boundingBox.setLocation(location);
 
         movePacket.update();

@@ -49,7 +49,7 @@ public class Path {
      */
     public void setStart(Vector start) {
         if(this.contains(start)) {
-            while(!ordered.get(0).equals(start)) {
+            while(!getBlockVector(ordered.get(0)).equals(getBlockVector(start))) {
                 unordered.remove(getBlockVector(ordered.get(0)));
                 ordered.remove(0);
             }
@@ -93,7 +93,7 @@ public class Path {
         //Vector start = new Vector(getX(),getY());
         List<Vector> newPoints = new ArrayList<>();
         int index = 0;
-        while(!ordered.get(index).equals(shortcutStart)) {
+        while(!getBlockVector(ordered.get(index)).equals(getBlockVector(shortcutStart))) {
             newPoints.add(ordered.get(index));
             index++;
         }

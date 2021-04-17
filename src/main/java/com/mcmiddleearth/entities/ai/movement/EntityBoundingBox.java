@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
+import java.util.logging.Logger;
+
 public class EntityBoundingBox {
 
     Vector min, max, dMin, dMax;
@@ -17,7 +19,7 @@ public class EntityBoundingBox {
 
     public EntityBoundingBox(EntityBoundingBox other) {
         dMin = other.dMin.clone();
-        dMax = other.dMin.clone();
+        dMax = other.dMax.clone();
         min = other.min;
         max = other.max;
     }

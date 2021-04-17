@@ -3,10 +3,12 @@ package com.mcmiddleearth.entities.ai.goals;
 import com.mcmiddleearth.entities.EntitiesPlugin;
 import com.mcmiddleearth.entities.ai.pathfinding.Path;
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
-import com.mcmiddleearth.entities.ai.pathfinding.RayTracer;
+import com.mcmiddleearth.entities.ai.movement.RayTracer;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+
+import java.util.logging.Logger;
 
 public abstract class PathGoal extends VirtualEntityGoal {
 
@@ -33,11 +35,7 @@ public abstract class PathGoal extends VirtualEntityGoal {
         findPath(getEntity().getLocation().toVector());
 //Logger.getGlobal().info("Found path: "+path+" complete: "+path.isComplete());
         updateWaypoint();
-        if(waypoint!=null) {
-            hasRotation = true;
-//Logger.getGlobal().info("waypoint "+waypoint);
-            rotation = getEntity().getLocation().clone().setDirection(waypoint).getYaw();
-        }
+//Logger.getGlobal().info("location: "+getEntity().getLocation().getX()+" "+getEntity().getLocation().getZ()+ " waypoint "+waypoint+" rotation: "+rotation);
     }
 
     @Override
@@ -93,11 +91,16 @@ public abstract class PathGoal extends VirtualEntityGoal {
 //Logger.getGlobal().info("update Waypoint: start "+path+" "+path.getEnd());
         if(path!=null && path.getEnd()!=null) {
             int index = path.length()-1;
-            while(!isDirectWayClear(path.get(index)) && index >= 0) {
+            while(index >= 0 && !isDirectWayClear(path.get(index))) {
 //Logger.getGlobal().info("update Waypoint: "+index);
                 index --;
             }
-            waypoint = path.get(index).clone();
+            if(index>=0) {
+                waypoint = path.get(index).clone();
+            }
+//Logger.getGlobal().info("Waypoint: "+waypoint.getX()+" "+waypoint.getZ());
+            setRotation(getEntity().getLocation().clone()
+                        .setDirection(waypoint.clone().subtract(getEntity().getLocation().toVector())).getYaw());
         }
     }
 
@@ -121,6 +124,7 @@ public abstract class PathGoal extends VirtualEntityGoal {
         tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMinZ()));
         tracer.addRay(new Vector(boundingBox.getMaxX(),boundingBox.getMaxY(),boundingBox.getMaxZ()));
         //tracer.trace();
+        tracer.initTrace();
 //Logger.getGlobal().info("Tracer: first "+tracer.first()+" last "+ tracer.last() + " stepX: "+tracer.stepX()+" stepZ: "+tracer.stepZ());
         int i = tracer.first();
         do {
@@ -132,7 +136,7 @@ public abstract class PathGoal extends VirtualEntityGoal {
             int j = current.first();
             do {
 /*if(current.hasNext(j)) {
-    Logger.getGlobal().info("compare: z: " + j+":  "+ current.getNext(j) + " - " + current.get(j));
+    Logger.getGlobal().info("compare: z: " + j+":  "+ current.get(j) + " - " + current.getNext(j));
 }
 if(next != null && next.has(j)) {
     Logger.getGlobal().info("                              next: "+next.get(j)+" - "+current.get(j));

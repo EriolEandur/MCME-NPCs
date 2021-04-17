@@ -7,6 +7,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class WalkingPathfinder implements Pathfinder{
 
@@ -82,10 +83,10 @@ public class WalkingPathfinder implements Pathfinder{
 //    System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
 //);
             path.optimise(entity.getJumpHeight(), entity.getFallDepth());
-//Logger.getGlobal().info("optimise");
-//path.getPoints().forEach(vector -> {
-//    System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
-//);
+Logger.getGlobal().info("Path");
+path.getPoints().forEach(vector -> {
+    System.out.println("x: " + vector.getBlockX() + " y: " + vector.getBlockY() + " z: " + vector.getBlockZ());}
+);
 
             return path;
         //} else {
@@ -164,7 +165,9 @@ public class WalkingPathfinder implements Pathfinder{
     }
 
     private boolean canMove(PathMarker next) {
-//Logger.getGlobal().info("CanMove: "+next.getPoint().getY() +" - "+current.getPoint().getY());
+//Logger.getGlobal().info("CanMove: "+current.getPoint().getBlockX()+" "+current.getPoint().getBlockZ()+" "
+//                          +next.getPoint().getBlockX()+" "+next.getPoint().getBlockZ()+" "
+//                          +current.getPoint().getY() +" - "+next.getPoint().getY());
         return next.getPoint().getY() - current.getPoint().getY() <= entity.getJumpHeight()
                 && current.getPoint().getY() - next.getPoint().getY() <= entity.getFallDepth();
     }

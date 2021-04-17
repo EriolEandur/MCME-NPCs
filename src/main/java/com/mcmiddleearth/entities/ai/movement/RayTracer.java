@@ -1,4 +1,4 @@
-package com.mcmiddleearth.entities.ai.pathfinding;
+package com.mcmiddleearth.entities.ai.movement;
 
 import com.mcmiddleearth.entities.util.TriFunction;
 import org.bukkit.util.Vector;
@@ -8,15 +8,17 @@ import java.util.List;
 
 public class RayTracer<T> {
 
-    private List<Ray> rays = new ArrayList<>();
+    private final List<Ray> rays = new ArrayList<>();
 
     private RayTraceResultColumn current;
 
     private RayTraceResultColumn next;
 
     private final int stepX, stepZ;
-    private int blockX, lastStartZ;
-    private final int  blockStartX, blockEndX;
+    private int blockX, lastStartZ, blockStartX;
+    private final int blockEndX;
+
+    private boolean expandStartX = false;
 
     private final Vector start;
     private final Vector traceVector;
@@ -38,6 +40,15 @@ public class RayTracer<T> {
         blockStartX = start.getBlockX();
         blockEndX = getBlock(start.getX()+traceVector.getX());
         blockX = blockStartX;
+    }
+
+    public void initTrace() {
+        int rayStartX = getRayStartX();
+        if(rayStartX != blockStartX) {
+            blockStartX = rayStartX;
+            blockX = blockStartX;
+            expandStartX = true;
+        }
     }
 
     public void traceStep() {
@@ -80,26 +91,34 @@ public class RayTracer<T> {
         if(stepZ>0) {
             startZ = Math.min(minZ, lastStartZ);
             if(blockX == blockStartX) {
-                startZ = start.getBlockZ();
+                if(expandStartX) {
+                    startZ = start.getBlockZ();
+                } else {
+                    startZ = getRayMinStartZ();
+                }
             }
             if(blockX == blockEndX) {
-                maxZ = getBlock(start.getBlockZ()+traceVector.getZ());
+                maxZ = getBlock(start.getZ()+traceVector.getZ());
             }
             lengthZ = maxZ - startZ + 1;
         } else {
             startZ = Math.max(maxZ, lastStartZ);
             if(blockX == blockStartX) {
-                startZ = start.getBlockZ();
+                if(expandStartX) {
+                    startZ = start.getBlockZ();
+                } else {
+                    startZ = getRayMaxStartZ();
+                }
             }
             if(blockX == blockEndX) {
-                minZ = getBlock(start.getBlockZ()+traceVector.getZ());
+                minZ = getBlock(start.getZ()+traceVector.getZ());
             }
             lengthZ = startZ - minZ +1;
         }
         lastStartZ = startZ;
 //Logger.getGlobal().info("blockStartX:"+blockStartX+" blockX:"+blockX+" blockEndX:"+blockEndX);
 //Logger.getGlobal().info("minZ:"+minZ+" maxZ"+maxZ+" startZ:"+startZ+" lenngthZ:"+lengthZ);
-        int[] blockYs = new int[lengthZ];
+        int[] blockYs = new int[Math.max(lengthZ,1)];
         for(int i = 0; i < blockYs.length; i++) {
             blockYs[i] = maxY + getBlock(myz * i);
         }
@@ -146,6 +165,48 @@ public class RayTracer<T> {
         return (int) Math.floor(cord);
     }
 
+    private int getRayStartX() {
+        int rayStart;
+        if(stepX > 0) {
+            rayStart = Integer.MAX_VALUE;
+            for(Ray ray: rays) {
+                if (ray.getStartX() < rayStart) {
+                    rayStart = ray.getStartX();
+                }
+            }
+        } else {
+            rayStart = Integer.MIN_VALUE;
+            for(Ray ray: rays) {
+                if (ray.getStartX() > rayStart) {
+                    rayStart = ray.getStartX();
+                }
+            }
+        }
+        return rayStart;
+    }
+
+    private int getRayMinStartZ() {
+        int rayStart = Integer.MAX_VALUE;
+        for (Ray ray : rays) {
+            if (ray.getStartZ() < rayStart) {
+                rayStart = ray.getStartZ();
+            }
+        }
+//Logger.getGlobal().info("RayMinStartZ: "+rayStart);
+        return rayStart;
+    }
+
+    private int getRayMaxStartZ() {
+        int rayStart = Integer.MIN_VALUE;
+        for (Ray ray : rays) {
+            if (ray.getStartZ() > rayStart) {
+                rayStart = ray.getStartZ();
+            }
+        }
+//Logger.getGlobal().info("RayMaxStartZ: "+rayStart);
+        return rayStart;
+    }
+
     public class RayTraceResultColumn {
 
         private final int blockX;
@@ -158,7 +219,7 @@ public class RayTracer<T> {
 
         public RayTraceResultColumn(int blockX, int startZ, int[] blockYs) {
             this.blockYs = blockYs;
-            for(int y: blockYs) this.rows.add(null);
+            for(int ignored : blockYs) this.rows.add(null);
             this.startZ = startZ;
             this.blockX = blockX;
         }
@@ -184,7 +245,7 @@ public class RayTracer<T> {
         public T getNext(int j) {
             int index = (j - startZ) * stepZ + 1;
             if (rows.get(index)==null) {
-                rows.set(index, calculateValue(blockX,blockYs[index],j));
+                rows.set(index, calculateValue(blockX,blockYs[index],j+stepZ));
             }
             return rows.get(index);
         }
@@ -213,9 +274,17 @@ public class RayTracer<T> {
         }
 
         public double getZ(double x) {
+//Logger.getGlobal().info("mz: "+mz+" x: "+x+" startX: "+start.getX()+" startZ: "+start.getZ()+" result: "+(start.getZ()+mz * (x - start.getX())));
             return start.getZ()+mz * (x - start.getX());
         }
 
+        public int getStartX() {
+            return start.getBlockX();
+        }
+
+        public int getStartZ() {
+            return start.getBlockZ();
+        }
     }
 
 }

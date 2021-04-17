@@ -13,7 +13,7 @@ public interface CompositeEntityData {
      * Get the parts this composite entity is composed of.
      * @return Array of the parts.
      */
-    public CompositeEntityPartData[] getParts();
+    public CompositeEntityBoneData[] getParts();
 
     /**
      * Update all part data to the next server tick (50 ms). This includes calculating new locations of all parts due
