@@ -33,4 +33,11 @@ public interface McmeEntity {
 
     public int getEntityQuantity();
 
+    public boolean hasLookUpdate();
+
+    public boolean hasRotationUpdate();
+
+    public boolean onGround();
+
+    public float getRotation();
 }

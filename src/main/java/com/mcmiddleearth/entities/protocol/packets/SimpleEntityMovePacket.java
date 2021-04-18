@@ -2,11 +2,9 @@ package com.mcmiddleearth.entities.protocol.packets;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.mcmiddleearth.entities.entities.SimpleEntity;
+import com.mcmiddleearth.entities.entities.McmeEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-
-import java.util.logging.Logger;
 
 public class SimpleEntityMovePacket extends AbstractPacket {
 
@@ -16,11 +14,11 @@ public class SimpleEntityMovePacket extends AbstractPacket {
     private final PacketContainer stand;
     private final PacketContainer head;
 
-    private final SimpleEntity entity;
+    private final McmeEntity entity;
 
     private MoveType moveType;
 
-    public SimpleEntityMovePacket(SimpleEntity entity) {
+    public SimpleEntityMovePacket(McmeEntity entity) {
         this.entity = entity;
         moveLook = new PacketContainer(PacketType.Play.Server.REL_ENTITY_MOVE_LOOK);
         moveLook.getIntegers().write(0,entity.getEntityId());

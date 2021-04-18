@@ -8,6 +8,7 @@ import com.mcmiddleearth.entities.ai.movement.EntityBoundingBox;
 import com.mcmiddleearth.entities.ai.movement.MovementType;
 import com.mcmiddleearth.entities.entities.attributes.VirtualAttributeFactory;
 import com.mcmiddleearth.entities.entities.attributes.VirtualEntityAttributeInstance;
+import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
 import com.mcmiddleearth.entities.entities.composite.CompositeEntity;
 import com.mcmiddleearth.entities.util.UuidGenerator;
 import org.bukkit.Location;
@@ -26,7 +27,7 @@ public class VirtualEntityFactory {
 
     private UUID uniqueId;
 
-    private String name;
+    private String name, dataFile;
 
     private final Location location;
 
@@ -106,6 +107,15 @@ public class VirtualEntityFactory {
         return this;
     }
 
+    public VirtualEntityFactory withDataFile(String filename) {
+        this.dataFile = filename;
+        return this;
+    }
+
+    public String getDataFile() {
+        return this.dataFile;
+    }
+
     public VirtualEntityGoalFactory getGoalFactory() {
         return new VirtualEntityGoalFactory().withTargetEntity(targetEntity)
                 .withTargetLocation(targetLocation)
@@ -152,8 +162,8 @@ public class VirtualEntityFactory {
     public McmeEntity build(int entityId) {
         if(type.isCustomType()) {
             switch(type.getCustomType()) {
-                case COMPOSITE:
-                    return new CompositeEntity(entityId, this);
+                case BAKED_ANIMATION:
+                    return new BakedAnimationEntity(entityId, this);
                 default:
                     throw new RuntimeException("EntityType not implemented");
             }

@@ -173,6 +173,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         rotationUpdate = true;
     }
 
+    @Override
     public float getRotation() {
         return rotation;
     }
@@ -206,10 +207,12 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         return movementType;
     }
 
+    @Override
     public boolean hasLookUpdate() {
         return lookUpdate;
     }
 
+    @Override
     public boolean hasRotationUpdate() {
         return rotationUpdate;
     }
@@ -219,6 +222,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         return null;
     }
 
+    @Override
     public boolean onGround() {
         return true;
     }

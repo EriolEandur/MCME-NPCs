@@ -2,19 +2,17 @@ package com.mcmiddleearth.entities.protocol.packets;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
-import com.mcmiddleearth.entities.entities.SimpleEntity;
+import com.mcmiddleearth.entities.entities.McmeEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-
-import java.util.logging.Logger;
 
 public class SimpleEntityTeleportPacket extends AbstractPacket {
 
     private final PacketContainer teleport;
 
-    private final SimpleEntity entity;
+    private final McmeEntity entity;
 
-    public SimpleEntityTeleportPacket(SimpleEntity entity) {
+    public SimpleEntityTeleportPacket(McmeEntity entity) {
         this.entity = entity;
         teleport = new PacketContainer(PacketType.Play.Server.ENTITY_TELEPORT);
         teleport.getIntegers().write(0,entity.getEntityId());
@@ -32,7 +30,7 @@ public class SimpleEntityTeleportPacket extends AbstractPacket {
         teleport.getBytes()
                 .write(0, (byte)(location.getYaw()*256/360))
                 .write(1, (byte)(location.getPitch()*256/360));
-        teleport.getBooleans().write(0,entity.onGround());
+        teleport.getBooleans().write(0,true);//entity.onGround());
     }
 
     @Override

@@ -15,7 +15,8 @@ public class McmeEntityType {
     private EntityType bukkitEntityType;
 
     public static enum CustomEntityType {
-        COMPOSITE;
+        BAKED_ANIMATION,
+        BONE;
     }
 
     public McmeEntityType(CustomEntityType customType) {

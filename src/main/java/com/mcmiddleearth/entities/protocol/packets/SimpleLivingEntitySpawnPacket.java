@@ -2,6 +2,7 @@ package com.mcmiddleearth.entities.protocol.packets;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
+import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.SimpleLivingEntity;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -13,9 +14,9 @@ public class SimpleLivingEntitySpawnPacket extends AbstractPacket {
 
     private final PacketContainer spawn;
 
-    private final SimpleLivingEntity entity;
+    private final McmeEntity entity;
 
-    public SimpleLivingEntitySpawnPacket(SimpleLivingEntity entity) {
+    public SimpleLivingEntitySpawnPacket(McmeEntity entity) {
         this.entity = entity;
         spawn = new PacketContainer(PacketType.Play.Server.SPAWN_ENTITY_LIVING);
         spawn.getIntegers().write(0, entity.getEntityId())
