@@ -1,6 +1,8 @@
 package com.mcmiddleearth.entities.entities.composite.animation;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
 import com.mcmiddleearth.entities.entities.composite.CompositeEntity;
 import org.bukkit.Material;
 
@@ -13,9 +15,7 @@ public class Animation {
 
     private final List<Frame> frames = new ArrayList<>();
 
-    private final Map<String, Integer> states = new HashMap<>();
-
-    private int currentState, currentFrame, ticks;
+    private int currentFrame, ticks;
 
     private final AnimationType type;
 
@@ -25,7 +25,10 @@ public class Animation {
 
     private boolean finished;
 
-    public Animation(AnimationType type, String next, int interval) {
+    private final BakedAnimationEntity entity;
+
+    public Animation(BakedAnimationEntity entity, AnimationType type, String next, int interval) {
+        this.entity = entity;
         this.type = type;
         this.next = next;
         this.interval = interval;
@@ -56,7 +59,7 @@ public class Animation {
                     return;
                 }
             }
-            frames.get(currentFrame).apply(currentState);
+            frames.get(currentFrame).apply(entity.getState());
         }
     }
 
@@ -68,16 +71,6 @@ public class Animation {
         frames.add(frame);
     }
 
-    public void setState(String name) {
-        if(states.containsKey(name)) {
-            currentState = states.get(name);
-        }
-    }
-
-    public Map<String, Integer> getStates() {
-        return states;
-    }
-
     public String getNext() {
         return next;
     }
@@ -86,7 +79,7 @@ public class Animation {
         return type;
     }
 
-    public static Animation loadAnimation(JsonObject data, Material itemMaterial, CompositeEntity entity) {
+    public static Animation loadAnimation(JsonObject data, Material itemMaterial, BakedAnimationEntity entity) {
         Map<String, Integer> states = new HashMap<>();
         AnimationType type;
         try {
@@ -95,9 +88,12 @@ public class Animation {
             type = AnimationType.ONCE;
         }
         int interval = (data.get("interval") == null? 1 : data.get("interval").getAsInt());
-        String next = data.get("next").getAsString();
-        Animation animation = new Animation(type, next, interval);
-
+        String next = (data.has("next")?data.get("next").getAsString():null);
+        Animation animation = new Animation(entity, type, next, interval);
+        JsonArray frameData = data.get("frames").getAsJsonArray();
+        for(int i = 0; i< frameData.size(); i++) {
+            animation.addFrame(Frame.loadFrame(entity,animation,frameData.get(i).getAsJsonObject(),itemMaterial));
+        }
         return animation;
     }
 }

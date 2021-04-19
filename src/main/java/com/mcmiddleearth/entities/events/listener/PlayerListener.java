@@ -13,7 +13,7 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         RealPlayer player = EntityAPI.getMcmePlayer(event.getPlayer().getUniqueId());
         if(player != null) {
-            EntitiesPlugin.getInstance().getEntityServer().getPlayerProvider().removePlayer(event.getPlayer());
+            EntitiesPlugin.getEntityServer().getPlayerProvider().removePlayer(event.getPlayer());
         }
     }
 }

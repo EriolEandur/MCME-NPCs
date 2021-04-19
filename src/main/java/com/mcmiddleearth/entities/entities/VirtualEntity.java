@@ -168,6 +168,7 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
         lookUpdate = true;
     }
 
+    @Override
     public void setRotation(float yaw) {
         rotation = yaw;
         rotationUpdate = true;

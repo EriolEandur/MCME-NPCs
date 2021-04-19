@@ -40,4 +40,6 @@ public interface McmeEntity {
     public boolean onGround();
 
     public float getRotation();
+
+    public void setRotation(float yaw);
 }

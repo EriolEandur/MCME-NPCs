@@ -6,9 +6,6 @@ import com.mcmiddleearth.entities.provider.BlockProvider;
 import org.bukkit.block.BlockFace;
 import org.bukkit.util.Vector;
 
-import java.util.Random;
-import java.util.logging.Logger;
-
 public class WalkingPathfinder implements Pathfinder{
 
     private final VirtualEntity entity;
@@ -83,10 +80,10 @@ public class WalkingPathfinder implements Pathfinder{
 //    System.out.println("x: " + vector.getX() + " y: " + vector.getY() + " z: " + vector.getZ());}
 //);
             path.optimise(entity.getJumpHeight(), entity.getFallDepth());
-Logger.getGlobal().info("Path");
+/*Logger.getGlobal().info("Path");
 path.getPoints().forEach(vector -> {
     System.out.println("x: " + vector.getBlockX() + " y: " + vector.getBlockY() + " z: " + vector.getBlockZ());}
-);
+);*/
 
             return path;
         //} else {

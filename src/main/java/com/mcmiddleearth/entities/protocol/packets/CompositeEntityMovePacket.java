@@ -14,5 +14,12 @@ public class CompositeEntityMovePacket extends AbstractPacket {
     @Override
     public void send(Player recipient) {
         entity.getBones().forEach(bone -> bone.getMovePacket().send(recipient));
+        entity.getBones().forEach(bone -> bone.getMetaPacket().send(recipient));
+    }
+
+    @Override
+    public void update() {
+        entity.getBones().forEach(bone -> bone.getMovePacket().update());
+        entity.getBones().forEach(bone -> bone.getMetaPacket().update());
     }
 }

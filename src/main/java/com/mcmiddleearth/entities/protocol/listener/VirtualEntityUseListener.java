@@ -43,19 +43,19 @@ public class VirtualEntityUseListener extends EntityListener {
             boolean isSneaking = packet.getBooleans().read(0);
             switch(action) {
                 case INTERACT_AT:
-Logger.getGlobal().info("interact at!");
+//Logger.getGlobal().info("interact at!");
                     Vector vector = packet.getVectors().read(0);
-                    Logger.getLogger(this.getClass().getName()).info("X: " + vector.getX());
-                    Logger.getLogger(this.getClass().getName()).info("Y: " + vector.getY());
-                    Logger.getLogger(this.getClass().getName()).info("Z: " + vector.getZ());
+//Logger.getLogger(this.getClass().getName()).info("X: " + vector.getX());
+//Logger.getLogger(this.getClass().getName()).info("Y: " + vector.getY());
+//Logger.getLogger(this.getClass().getName()).info("Z: " + vector.getZ());
                     throwEvent(new VirtualPlayerInteractAtEvent(player, (VirtualEntity)entity, vector, hand, isSneaking));
                     break;
                 case INTERACT:
-Logger.getGlobal().info("interact!");
+//Logger.getGlobal().info("interact!");
                     throwEvent(new VirtualPlayerInteractEvent(player, (VirtualEntity)entity, hand, isSneaking));
                     break;
                 case ATTACK:
-Logger.getGlobal().info("attack!");
+//Logger.getGlobal().info("attack!");
                     throwEvent(new VirtualPlayerAttackEvent(player, (VirtualEntity)entity, isSneaking));
                     break;
             }

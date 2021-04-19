@@ -20,8 +20,15 @@ public class McmeEntityType {
     }
 
     public McmeEntityType(CustomEntityType customType) {
-        this.customType = customType;
+        setCustom(customType);
         isCustomType = true;
+    }
+
+    private void setCustom(CustomEntityType customType) {
+        this.customType = customType;
+        if(customType.equals(CustomEntityType.BONE)) {
+            bukkitEntityType = EntityType.ARMOR_STAND;
+        }
     }
 
     public McmeEntityType(EntityType bukkitEntityType) {
@@ -35,13 +42,14 @@ public class McmeEntityType {
             bukkitEntityType = EntityType.valueOf(type.toUpperCase());
         } catch(Exception ignore) {}
         if(bukkitEntityType==null) {
-            customType = null;
+            CustomEntityType customType = null;
             try {
-                customType = CustomEntityType.valueOf(type);
+                customType = CustomEntityType.valueOf(type.toUpperCase());
+                setCustom(customType);
             } catch(Exception exception) {
                 Logger.getLogger(this.getClass().getSimpleName()).log(Level.WARNING, "Invalid entity type!", exception);
             }
-            this.isCustomType = true;
+            isCustomType = true;
         } else {
             this.isCustomType = false;
         }

@@ -52,6 +52,15 @@ public class RealPlayer extends BukkitCommandSender implements McmeEntity {
 
     }
 
+    public float getRotation() {
+        return 0;
+    }
+
+    @Override
+    public void setRotation(float yaw) {
+
+    }
+
     @Override
     public Location getTarget() {
         return null;
@@ -77,6 +86,21 @@ public class RealPlayer extends BukkitCommandSender implements McmeEntity {
         return 1;
     }
 
+    @Override
+    public boolean hasLookUpdate() {
+        return false;
+    }
+
+    @Override
+    public boolean hasRotationUpdate() {
+        return false;
+    }
+
+    @Override
+    public boolean onGround() {
+        return false;
+    }
+
     public Player getBukkitPlayer() {
         return (Player) getCommandSender();
     }
@@ -85,5 +109,6 @@ public class RealPlayer extends BukkitCommandSender implements McmeEntity {
     public void sendMessage(BaseComponent[] baseComponents) {
         getBukkitPlayer().sendMessage(baseComponents);
     }
+
 
 }

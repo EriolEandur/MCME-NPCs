@@ -152,16 +152,16 @@ public class SyncEntityServer implements EntityServer {
     public void registerEventHandler(McmeEventListener listener) {
         Arrays.stream(listener.getClass().getDeclaredMethods())
               .filter(method -> {
-Logger.getGlobal().info(method.toString());
-Logger.getGlobal().info( "annotation: "+(method.getDeclaredAnnotation(EntityEventHandler.class)!=null));
-Logger.getGlobal().info( "parameters: "+(method.getParameterCount()));
-Logger.getGlobal().info( "assignable: "+McmeEntityEvent.class.isAssignableFrom(method.getParameterTypes()[0]));
+//Logger.getGlobal().info(method.toString());
+//Logger.getGlobal().info( "annotation: "+(method.getDeclaredAnnotation(EntityEventHandler.class)!=null));
+//Logger.getGlobal().info( "parameters: "+(method.getParameterCount()));
+//Logger.getGlobal().info( "assignable: "+McmeEntityEvent.class.isAssignableFrom(method.getParameterTypes()[0]));
                   return method.getDeclaredAnnotation(EntityEventHandler.class)!=null
                           && method.getParameterCount()==1
                           && McmeEntityEvent.class.isAssignableFrom(method.getParameterTypes()[0]);
               })
               .forEach(method -> {
-Logger.getGlobal().info("Matching: "+method.toString());
+//Logger.getGlobal().info("Matching: "+method.toString());
                   Class<? extends McmeEntityEvent> parameterType = (Class<? extends McmeEntityEvent>) method.getParameterTypes()[0];
                   List<McmeEntityEventHandler> handlerList = eventHandlers.computeIfAbsent(parameterType, k -> new ArrayList<>());
                   handlerList.add(new McmeEntityEventHandler(method, listener));
@@ -186,7 +186,7 @@ Logger.getGlobal().info("Matching: "+method.toString());
 
     @Override
     public void handleEvent(McmeEntityEvent event) {
-        eventHandlers.forEach((key,value)-> Logger.getGlobal().info(key.toString() +"\n----\n"+value.toString()+"\n***********************\n"));
+//eventHandlers.forEach((key,value)-> Logger.getGlobal().info(key.toString() +"\n----\n"+value.toString()+"\n***********************\n"));
         List<McmeEntityEventHandler> handlerList = eventHandlers.get(event.getClass());
         if(handlerList != null) {
             handlerList.forEach(handler -> handler.handle(event));

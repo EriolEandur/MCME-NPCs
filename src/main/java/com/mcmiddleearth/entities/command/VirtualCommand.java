@@ -3,6 +3,7 @@ package com.mcmiddleearth.entities.command;
 import com.google.common.base.Joiner;
 import com.mcmiddleearth.command.AbstractCommandHandler;
 import com.mcmiddleearth.command.McmeCommandSender;
+import com.mcmiddleearth.command.TabCompleteRequest;
 import com.mcmiddleearth.command.builder.HelpfulLiteralBuilder;
 import com.mcmiddleearth.command.builder.HelpfulRequiredArgumentBuilder;
 import com.mcmiddleearth.entities.EntityAPI;
@@ -13,6 +14,7 @@ import com.mcmiddleearth.entities.ai.goals.VirtualEntityGoal;
 import com.mcmiddleearth.entities.ai.pathfinding.Path;
 import com.mcmiddleearth.entities.ai.pathfinding.WalkingPathfinder;
 import com.mcmiddleearth.entities.entities.*;
+import com.mcmiddleearth.entities.entities.composite.BakedAnimationEntity;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,6 +71,7 @@ public class VirtualCommand extends AbstractCommandHandler implements TabExecuto
     private int spawnEntity(McmeCommandSender sender, String type, String name) {
         VirtualEntityFactory factory = new VirtualEntityFactory(new McmeEntityType(type), ((RealPlayer)sender).getLocation())
                 .withName(name)
+                .withDataFile(name)
                 .withGoalType(GoalType.FOLLOW_ENTITY)
                 .withTargetEntity((RealPlayer)sender);
         ((BukkitCommandSender)sender).setSelection(EntityAPI.spawnEntity(factory));
@@ -118,7 +121,11 @@ public class VirtualCommand extends AbstractCommandHandler implements TabExecuto
     }
 
     private int animateEntity(McmeCommandSender sender, String animationId) {
-
+        RealPlayer player = ((RealPlayer)sender);
+        VirtualEntity entity = (VirtualEntity) player.getSelectedEntities().iterator().next();
+        if(entity instanceof BakedAnimationEntity) {
+            ((BakedAnimationEntity)entity).setAnimation(animationId);
+        }
         return 0;
     }
 
@@ -131,8 +138,11 @@ public class VirtualCommand extends AbstractCommandHandler implements TabExecuto
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        onTabComplete(new BukkitTabCompleteRequest(sender, String.format("%s %s", alias, Joiner.on(' ').join(args)).trim()));
-        return null;
+//Logger.getGlobal().info("tabComplete 1");
+        TabCompleteRequest request = new BukkitTabCompleteRequest(sender, String.format("/%s %s", alias, Joiner.on(' ').join(args)).trim());
+        onTabComplete(request);
+//Logger.getGlobal().info("tabComplete 1");
+        return request.getSuggestions();
     }
 
 }

@@ -14,11 +14,12 @@ public class CompositeEntitySpawnPacket extends AbstractPacket {
     @Override
     public void send(Player recipient) {
         entity.getBones().forEach(bone -> bone.getSpawnPacket().send(recipient));
-        entity.getBones().forEach(bone -> bone.getConfigPacket().send(recipient));
+        entity.getBones().forEach(bone -> bone.getInitPacket().send(recipient));
     }
 
     public void update() {
         entity.getBones().forEach(bone -> bone.getSpawnPacket().update());
-    }
+        entity.getBones().forEach(bone -> bone.getInitPacket().update());
+   }
 
 }

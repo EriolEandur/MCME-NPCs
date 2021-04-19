@@ -50,8 +50,14 @@ public abstract class CompositeEntity extends VirtualEntity {
 
     @Override
     public void move() {
-        bones.forEach(bone -> move());
+        bones.forEach(Bone::move);
         super.move();
+        bones.forEach(Bone::resetUpdateFlags);
+    }
+
+    public void setRotation(float yaw) {
+        super.setRotation(yaw);
+        //bones.forEach(bone->bone.setRotation(yaw));
     }
 
     public Set<Bone> getBones() {

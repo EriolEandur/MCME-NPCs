@@ -8,8 +8,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 
-import java.util.logging.Logger;
-
 public class MovementEngine {
 
     private final Vector gravity = new Vector(0,-0.5,0);
@@ -43,14 +41,14 @@ public class MovementEngine {
                 entity.setVelocity(velocity);
                 break;
             case FALLING:
-Logger.getGlobal().info("entity vel: "+entity.getVelocity());
+//Logger.getGlobal().info("entity vel: "+entity.getVelocity());
                 velocity = entity.getVelocity().clone().add(gravity);
-Logger.getGlobal().info("FALLING: "+velocity);
+//Logger.getGlobal().info("FALLING: "+velocity);
                 if(cannotMove(velocity)) {
-Logger.getGlobal().info("cannot move 1: "+distanceToGround());
+//Logger.getGlobal().info("cannot move 1: "+distanceToGround());
                     velocity.setY(-distanceToGround());
                     if(cannotMove(velocity)) {
-Logger.getGlobal().info("cannot move 2");
+//Logger.getGlobal().info("cannot move 2");
                         velocity.setX(0);
                         velocity.setZ(0);
                     } else {
@@ -68,7 +66,7 @@ Logger.getGlobal().info("cannot move 2");
                     if(jumpHeight<= getMaxJumpHeight()+0.01) {
                         entity.setMovementType(MovementType.FALLING);
                         velocity.setY(Math.sqrt(-2 * jumpHeight * gravity.getY()));
-Logger.getGlobal().info("entity vel: "+entity.getVelocity());
+//Logger.getGlobal().info("entity vel: "+entity.getVelocity());
                     } else {
                         velocity = new Vector(0,0,0);
                     }
