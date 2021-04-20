@@ -150,6 +150,11 @@ public class Bone implements McmeEntity {
     }
 
     @Override
+    public void setGoal(Goal goal) {
+
+    }
+
+    @Override
     public int getEntityId() {
         return entityId;
     }
@@ -161,7 +166,7 @@ public class Bone implements McmeEntity {
 
     @Override
     public boolean hasLookUpdate() {
-        return false;
+        return true;
     }
 
     @Override

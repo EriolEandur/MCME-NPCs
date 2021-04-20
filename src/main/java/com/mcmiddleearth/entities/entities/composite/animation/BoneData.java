@@ -20,6 +20,8 @@ public class BoneData {
 
     private final ItemStack[] items;
 
+    private static final int Y_SHIFT = 3;
+
     public BoneData(EulerAngle headPose, Vector position, ItemStack[] items) {
         this.headPose = headPose;
         this.position = position;
@@ -66,6 +68,6 @@ public class BoneData {
         return new EulerAngle(data.get(0).getAsDouble(),data.get(1).getAsDouble(),data.get(2).getAsDouble());
     }
     private static Vector readPosition(JsonArray data) {
-        return new Vector(data.get(0).getAsDouble(),data.get(1).getAsDouble(),data.get(2).getAsDouble());
+        return new Vector(data.get(0).getAsDouble(),data.get(1).getAsDouble()+Y_SHIFT,data.get(2).getAsDouble());
     }
 }

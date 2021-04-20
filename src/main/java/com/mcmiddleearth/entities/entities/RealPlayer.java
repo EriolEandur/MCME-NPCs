@@ -72,6 +72,11 @@ public class RealPlayer extends BukkitCommandSender implements McmeEntity {
     }
 
     @Override
+    public void setGoal(Goal goal) {
+
+    }
+
+    @Override
     public void doTick() {
 
     }

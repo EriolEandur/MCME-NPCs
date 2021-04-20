@@ -19,4 +19,9 @@ public class GotoLocationGoal extends LocationTargetingGoal {
     public void doTick() {
 
     }
+
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
 }

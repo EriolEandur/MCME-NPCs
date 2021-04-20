@@ -8,5 +8,6 @@ public enum GoalType {
     WALK,
     FLY,
     WATCH_ENTITY,
-    FOLLOW_ENTITY;
+    FOLLOW_ENTITY,
+    FOLLOW_CHECKPOINTS;
 }

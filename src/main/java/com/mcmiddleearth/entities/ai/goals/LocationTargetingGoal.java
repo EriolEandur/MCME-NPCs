@@ -1,6 +1,7 @@
 package com.mcmiddleearth.entities.ai.goals;
 
 import com.mcmiddleearth.entities.ai.pathfinding.Pathfinder;
+import com.mcmiddleearth.entities.entities.McmeEntity;
 import com.mcmiddleearth.entities.entities.VirtualEntity;
 import org.bukkit.Location;
 
@@ -39,4 +40,17 @@ public abstract class LocationTargetingGoal extends PathGoal {
         super(type, entity, pathfinder);
         this.target = target;
     }
+
+    public Location getTarget() {
+        return target;
+    }
+
+    public void setTarget(Location target) {
+        this.target = target;
+    }
+
+    public boolean isCloseToTarget(int distanceSquared) {
+        return getEntity().getLocation().toVector().distanceSquared(getTarget().toVector()) < distanceSquared;
+    }
+
 }

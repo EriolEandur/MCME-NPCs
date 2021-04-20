@@ -8,4 +8,5 @@ public interface Goal {
 
     int getUpdateInterval();
 
+    boolean isFinished();
 }

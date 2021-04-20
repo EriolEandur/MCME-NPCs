@@ -27,6 +27,8 @@ public interface McmeEntity {
 
     public Goal getGoal();
 
+    public void setGoal(Goal goal);
+
     public void doTick();
 
     public int getEntityId();

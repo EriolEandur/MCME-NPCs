@@ -11,6 +11,11 @@ public abstract class EntityTargetingGoal extends PathGoal {
 
     private float headYaw, headPitch;
 
+    public EntityTargetingGoal(GoalType type, VirtualEntity entity, Pathfinder pathfinder, McmeEntity target) {
+        super(type, entity, pathfinder);
+        this.target = target;
+    }
+
     @Override
     public void doTick() {
         super.doTick();
@@ -20,6 +25,7 @@ public abstract class EntityTargetingGoal extends PathGoal {
         headYaw = targetDir.getYaw();
         headPitch = targetDir.getPitch();
     }
+
     @Override
     public void update() {
         setPathTarget(getTarget().getLocation().toVector());
@@ -41,12 +47,11 @@ public abstract class EntityTargetingGoal extends PathGoal {
         return headPitch;
     }
 
-    public EntityTargetingGoal(GoalType type, VirtualEntity entity, Pathfinder pathfinder, McmeEntity target) {
-        super(type, entity, pathfinder);
-        this.target = target;
-    }
-
     public McmeEntity getTarget() {
         return target;
+    }
+
+    public boolean isCloseToTarget(int distanceSquared) {
+        return getEntity().getLocation().toVector().distanceSquared(getTarget().getLocation().toVector()) < distanceSquared;
     }
 }

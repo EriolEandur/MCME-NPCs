@@ -200,6 +200,13 @@ public abstract class VirtualEntity implements McmeEntity, Attributable {
     }
 
     @Override
+    public void setGoal(Goal goal) {
+        if(goal instanceof VirtualEntityGoal) {
+            this.goal = (VirtualEntityGoal) goal;
+        }
+    }
+
+    @Override
     public Vector getVelocity() {
         return velocity;
     }
